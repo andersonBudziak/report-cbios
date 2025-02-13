@@ -1,0 +1,51 @@
+
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-55.815776, -12.5147015]
+      },
+      "properties": {
+        "id": "1",
+        "car": "MT-5108501-70D4821B80A84D2FB942A46B2DC16B41",
+        "municipality": "Vera",
+        "state": "MT",
+        "declaredArea": 173.78,
+        "status": "ELEGÍVEL"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-55.715776, -12.4147015]
+      },
+      "properties": {
+        "id": "2",
+        "car": "MT-5103403-7DE5821C70B84D2FB942A46B2DC16B42",
+        "municipality": "Cuiabá",
+        "state": "MT",
+        "declaredArea": 245.32,
+        "status": "ELEGÍVEL"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-55.915776, -12.6147015]
+      },
+      "properties": {
+        "id": "3",
+        "car": "MT-5103452-8FE5821C70B84D2FB942A46B2DC16B43",
+        "municipality": "Sinop",
+        "state": "MT",
+        "declaredArea": 312.65,
+        "status": "NÃO ELEGÍVEL"
+      }
+    }
+  ]
+}

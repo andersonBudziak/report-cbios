@@ -1,0 +1,27 @@
+
+{
+  "reportId": "1",
+  "images": {
+    "1": {
+      "sensor": "S2A",
+      "imageId": "S2A_MSIL1C_20170904T140051_N0205_R067_T21LXQ_20170904T140051",
+      "date": "04/09/2017",
+      "centralCoordinate": [-55.815776, -12.5147015],
+      "url": "https://exemplo.com/imagem1.jpg"
+    },
+    "2": {
+      "sensor": "S2B",
+      "imageId": "S2B_MSIL1C_20230730T135709_N0509_R067_T21LXQ_20230730T171930",
+      "date": "30/07/2023",
+      "centralCoordinate": [-55.815776, -12.5147015],
+      "url": "https://exemplo.com/imagem2.jpg"
+    },
+    "3": {
+      "sensor": "S2A",
+      "imageId": "S2A_MSIL1C_20240619T135711_N0510_R067_T21LXQ_20240619T171933",
+      "date": "19/06/2024",
+      "centralCoordinate": [-55.815776, -12.5147015],
+      "url": "https://exemplo.com/imagem3.jpg"
+    }
+  }
+}
