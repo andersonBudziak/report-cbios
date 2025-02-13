@@ -40,7 +40,7 @@ export const ReportList = ({ reports, onPrint }: ReportListProps) => {
             checked={selectedReports.length === reports.length}
             onCheckedChange={handleSelectAll}
           />
-          <span className="text-sm text-gray-600">Selecionar Todos</span>
+          <span className="text-sm text-[#1F2937]">Selecionar Todos</span>
         </div>
         <Button
           onClick={() => onPrint(selectedReports)}
@@ -57,7 +57,7 @@ export const ReportList = ({ reports, onPrint }: ReportListProps) => {
         {reports.map((report) => (
           <Card
             key={report.id}
-            className="report-card cursor-pointer"
+            className="report-card cursor-pointer bg-[#F3F4F6] hover:bg-white"
             onClick={() => navigate(`/report/${report.id}`)}
           >
             <div className="flex items-center space-x-4">
@@ -67,11 +67,11 @@ export const ReportList = ({ reports, onPrint }: ReportListProps) => {
                 onClick={(e) => e.stopPropagation()}
               />
               <div className="flex-1">
-                <h3 className="font-semibold">CAR: {report.car}</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-[#064C9F]">CAR: {report.car}</h3>
+                <p className="text-sm text-[#1F2937]">
                   {report.municipality} - {report.state}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-[#1F2937]">
                   Área: {report.declaredArea} ha
                 </p>
               </div>
@@ -79,7 +79,7 @@ export const ReportList = ({ reports, onPrint }: ReportListProps) => {
                 className={`px-2 py-1 rounded-full text-xs ${
                   report.status === "ELEGÍVEL"
                     ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
+                    : "bg-red-100 text-[#DC2626]"
                 }`}
               >
                 {report.status}

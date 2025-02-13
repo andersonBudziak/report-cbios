@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -88,7 +87,7 @@ const Report = () => {
       <div className="flex justify-between items-center mb-8">
         <Button
           variant="ghost"
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 text-[#1F2937]"
           onClick={() => navigate("/")}
         >
           <ArrowLeft className="h-4 w-4" />
@@ -105,15 +104,15 @@ const Report = () => {
       </div>
 
       <Card className="p-6 space-y-8">
-        <h1 className="text-3xl font-bold">Relatório CBIOs</h1>
+        <h1 className="text-3xl font-bold text-[#064C9F]">Relatório CBIOs</h1>
 
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold mb-4">
+              <h2 className="text-xl font-semibold text-[#064C9F] mb-4">
                 Dados da Propriedade
               </h2>
-              <div className="space-y-2">
+              <div className="space-y-2 text-[#1F2937]">
                 <p>
                   <span className="font-medium">CAR:</span> {report.car}
                 </p>
@@ -154,8 +153,10 @@ const Report = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold mb-4">Dados da Análise</h2>
-              <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-[#064C9F] mb-4">
+                Dados da Análise
+              </h2>
+              <div className="space-y-2 text-[#1F2937]">
                 <p>
                   <span className="font-medium">Área Consolidada (ha):</span>{" "}
                   {report.consolidatedArea}
@@ -193,18 +194,20 @@ const Report = () => {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold text-[#064C9F] mb-4">
               Imagens e Sensores
             </h2>
             <div className="space-y-6">
               {report.images.map((image, index) => (
-                <Card key={index} className="p-4">
-                  <h3 className="font-medium mb-2">Imagem {index + 1}</h3>
+                <Card key={index} className="p-4 bg-[#F3F4F6]">
+                  <h3 className="font-medium mb-2 text-[#064C9F]">
+                    Imagem {index + 1}
+                  </h3>
                   <div 
                     ref={el => mapRefs.current[index] = el} 
                     className="w-full h-48 mb-4 rounded-lg overflow-hidden"
                   />
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-1 text-sm text-[#1F2937]">
                     <p>
                       <span className="font-medium">Sensores:</span>{" "}
                       {image.sensor}
