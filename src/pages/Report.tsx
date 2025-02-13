@@ -3,10 +3,20 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Printer } from "lucide-react";
+import Map from "ol/Map";
+import View from "ol/View";
+import TileLayer from "ol/layer/Tile";
+import { fromLonLat } from "ol/proj";
+import { useEffect, useRef } from "react";
+import ImageLayer from "ol/layer/Image";
+import Static from "ol/source/ImageStatic";
+import { getCenter } from "ol/extent";
+import OSM from "ol/source/OSM";
 
 const Report = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const mapRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Mock data - replace with actual data fetching
   const report = {
@@ -44,6 +54,29 @@ const Report = () => {
       },
     ],
   };
+
+  useEffect(() => {
+    report.images.forEach((image, index) => {
+      if (!mapRefs.current[index]) return;
+
+      const map = new Map({
+        target: mapRefs.current[index]!,
+        layers: [
+          new TileLayer({
+            source: new OSM(),
+          }),
+        ],
+        view: new View({
+          center: fromLonLat(image.centralCoordinate),
+          zoom: 13,
+        }),
+      });
+
+      return () => {
+        map.setTarget(undefined);
+      };
+    });
+  }, [report.images]);
 
   const handlePrint = () => {
     // Implement print functionality
@@ -163,10 +196,14 @@ const Report = () => {
             <h2 className="text-xl font-semibold mb-4">
               Imagens e Sensores
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {report.images.map((image, index) => (
                 <Card key={index} className="p-4">
                   <h3 className="font-medium mb-2">Imagem {index + 1}</h3>
+                  <div 
+                    ref={el => mapRefs.current[index] = el} 
+                    className="w-full h-48 mb-4 rounded-lg overflow-hidden"
+                  />
                   <div className="space-y-1 text-sm">
                     <p>
                       <span className="font-medium">Sensores:</span>{" "}
