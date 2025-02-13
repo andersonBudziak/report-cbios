@@ -17,7 +17,6 @@ const Report = () => {
   const navigate = useNavigate();
   const mapRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Mock data - replace with actual data fetching
   const report = {
     car: "MT-5108501-70D4821B80A84D2FB942A46B2DC16B41",
     municipality: "Vera",
@@ -78,13 +77,15 @@ const Report = () => {
   }, [report.images]);
 
   const handlePrint = () => {
-    // Implement print functionality
+    document.body.classList.add('printing');
+    window.print();
+    document.body.classList.remove('printing');
     console.log("Printing report:", id);
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 print:hidden">
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
@@ -111,7 +112,14 @@ const Report = () => {
       </div>
 
       <Card className="p-6 space-y-8">
-        <h1 className="text-3xl font-bold text-[#064C9F]">Relatório CBIOs</h1>
+        <div className="flex justify-between items-center print:mb-8">
+          <h1 className="text-3xl font-bold text-[#064C9F]">Relatório CBIOs</h1>
+          <img 
+            src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png"
+            alt="Merx Logo" 
+            className="h-12 w-auto hidden print:block"
+          />
+        </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">

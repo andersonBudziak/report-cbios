@@ -62,3 +62,32 @@
     transform: translateY(0);
   }
 }
+
+@media print {
+  /* Hide elementos que não devem aparecer na impressão */
+  .print\:hidden {
+    display: none !important;
+  }
+  
+  /* Mostrar elementos específicos para impressão */
+  .print\:block {
+    display: block !important;
+  }
+  
+  /* Ajustes gerais para impressão */
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  /* Garantir que as cores e backgrounds sejam impressos */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Quebrar página apropriadamente */
+  .page-break {
+    page-break-before: always;
+  }
+}
