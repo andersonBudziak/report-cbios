@@ -30,7 +30,18 @@ const Report = () => {
         date: "04/09/2017",
         centralCoordinate: [-55.815776, -12.5147015],
       },
-      // Add other images...
+      {
+        sensor: "S2B",
+        imageId: "S2B_MSIL1C_20230730T135709_N0509_R067_T21LXQ_20230730T171930",
+        date: "30/07/2023",
+        centralCoordinate: [-55.815776, -12.5147015],
+      },
+      {
+        sensor: "S2A",
+        imageId: "S2A_MSIL1C_20240619T135711_N0510_R067_T21LXQ_20240619T171933",
+        date: "19/06/2024",
+        centralCoordinate: [-55.815776, -12.5147015],
+      },
     ],
   };
 

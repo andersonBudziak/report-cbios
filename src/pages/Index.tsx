@@ -5,7 +5,6 @@ import Map from "@/components/Map";
 import { ReportList } from "@/components/ReportList";
 import { Report } from "@/types/report";
 
-// Mock data - replace with actual data
 const mockReports: Report[] = [
   {
     id: "1",
@@ -32,10 +31,24 @@ const mockReports: Report[] = [
         centralCoordinate: [-55.815776, -12.5147015],
         url: "",
       },
-      // Add other images...
+      {
+        id: "2",
+        sensor: "S2B",
+        imageId: "S2B_MSIL1C_20230730T135709_N0509_R067_T21LXQ_20230730T171930",
+        date: "30/07/2023",
+        centralCoordinate: [-55.815776, -12.5147015],
+        url: "",
+      },
+      {
+        id: "3",
+        sensor: "S2A",
+        imageId: "S2A_MSIL1C_20240619T135711_N0510_R067_T21LXQ_20240619T171933",
+        date: "19/06/2024",
+        centralCoordinate: [-55.815776, -12.5147015],
+        url: "",
+      },
     ],
   },
-  // Add more mock reports...
 ];
 
 const Index = () => {
