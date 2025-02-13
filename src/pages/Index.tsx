@@ -91,7 +91,14 @@ const Index = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
-      <h1 className="text-3xl font-bold text-[#064C9F]">Relatórios CBIOs</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold text-[#064C9F]">Relatórios CBIOs</h1>
+        <img 
+          src="/merx-logo.svg" 
+          alt="Merx Logo" 
+          className="h-12 w-auto"
+        />
+      </div>
       
       <div className="relative">
         <Input
