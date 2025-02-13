@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -64,30 +65,77 @@
 }
 
 @media print {
-  /* Hide elementos que não devem aparecer na impressão */
+  /* Configurações gerais para impressão A4 */
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+  
+  html, body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Container principal */
+  .container {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Ajustes de layout para impressão */
   .print\:hidden {
     display: none !important;
   }
   
-  /* Mostrar elementos específicos para impressão */
   .print\:block {
     display: block !important;
   }
   
-  /* Ajustes gerais para impressão */
+  /* Garantir que as cores e backgrounds sejam impressos */
   body {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
   
-  /* Garantir que as cores e backgrounds sejam impressos */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
   
+  /* Ajustes para o grid na impressão */
+  .grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  /* Ajustes para os mapas na impressão */
+  .map-container {
+    height: 200px !important;
+    page-break-inside: avoid;
+  }
+  
+  /* Evitar quebras de página indesejadas */
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+  
+  .card {
+    page-break-inside: avoid;
+  }
+  
   /* Quebrar página apropriadamente */
   .page-break {
     page-break-before: always;
+  }
+  
+  /* Remover sombras e efeitos que podem afetar a impressão */
+  .shadow-lg,
+  .shadow-md,
+  .shadow-sm {
+    box-shadow: none !important;
   }
 }
