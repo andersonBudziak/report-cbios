@@ -96,7 +96,7 @@ const Report = () => {
           </Button>
         </div>
         <img 
-          src="/merx-logo.svg" 
+          src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png"
           alt="Merx Logo" 
           className="h-12 w-auto"
         />

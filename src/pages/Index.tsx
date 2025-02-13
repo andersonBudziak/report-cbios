@@ -94,7 +94,7 @@ const Index = () => {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-[#064C9F]">Relatórios CBIOs</h1>
         <img 
-          src="/merx-logo.svg" 
+          src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png"
           alt="Merx Logo" 
           className="h-12 w-auto"
         />
