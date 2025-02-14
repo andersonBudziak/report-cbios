@@ -15,14 +15,5 @@ export interface Report {
   harvestReference: string;
   productivePotential: number;
   coordinates: [number, number];
-  images: SatelliteImage[];
-}
-
-export interface SatelliteImage {
-  id: string;
-  sensor: string;
-  imageId: string;
-  date: string;
-  centralCoordinate: [number, number];
-  url: string;
+  images: string[];
 }

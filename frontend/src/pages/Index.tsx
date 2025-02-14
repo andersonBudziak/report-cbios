@@ -6,7 +6,7 @@ import { ReportList } from "@/components/ReportList";
 import { Report } from "@/types/report";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data
 const mockReports: Report[] = [
