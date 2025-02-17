@@ -1,0 +1,6 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 150">
+  <text x="0" y="100" font-family="Arial Black" font-size="100" font-weight="900">MER</text>
+  <path d="M300 30 L340 100 L380 30" fill="none" stroke="#4CAF50" stroke-width="15"/>
+  <path d="M340 30 L380 100" fill="none" stroke="#1976D2" stroke-width="15"/>
+</svg>
