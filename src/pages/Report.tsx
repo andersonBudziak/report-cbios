@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,7 +19,6 @@ const Report = () => {
   const mapRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { toast } = useToast();
 
-  // Mock data - replace with actual data fetching
   const report = {
     car: "MT-5108501-70D4821B80A84D2FB942A46B2DC16B41",
     municipality: "Vera",
@@ -82,22 +80,17 @@ const Report = () => {
 
   const handlePrint = () => {
     try {
-      // Adiciona uma classe temporária para estilização de impressão
       document.body.classList.add('printing');
       
-      // Mostra notificação de início da impressão
       toast({
         title: "Impressão iniciada",
         description: "Preparando documento para impressão...",
       });
 
-      // Abre a janela de impressão do navegador
       window.print();
 
-      // Remove a classe de impressão
       document.body.classList.remove('printing');
 
-      // Log para debug
       console.log("Printing report:", id);
     } catch (error) {
       toast({
@@ -151,20 +144,20 @@ const Report = () => {
       </div>
 
       <Card className="p-6 space-y-8 print:shadow-none print:border-none">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-[#064C9F]">Relatório CBIOs</h1>
-          <div className={`px-4 py-2 rounded-full ${getStatusColor(report.status)}`}>
+        <div className="flex justify-between items-center print:mb-8">
+          <h1 className="text-3xl font-bold text-[#064C9F] print:text-2xl">Relatório CBIOs</h1>
+          <div className={`px-4 py-2 rounded-full ${getStatusColor(report.status)} print:text-sm`}>
             {report.status}
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="space-y-6">
+        <div className="grid md:grid-cols-2 gap-8 print:gap-4">
+          <div className="space-y-6 print:space-y-4">
             <div>
-              <h2 className="text-xl font-semibold text-[#064C9F] mb-4">
+              <h2 className="text-xl font-semibold text-[#064C9F] mb-4 print:text-lg print:mb-2">
                 Dados da Propriedade
               </h2>
-              <div className="space-y-2 text-[#1F2937]">
+              <div className="space-y-2 text-[#1F2937] print:space-y-1 print:text-sm">
                 <p>
                   <span className="font-medium">CAR:</span> {report.car}
                 </p>
@@ -192,11 +185,7 @@ const Report = () => {
                 <p>
                   <span className="font-medium">Status:</span>{" "}
                   <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      report.status === "ELEGÍVEL"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
+                    className={`px-2 py-1 rounded-full text-xs ${getStatusColor(report.status)}`}
                   >
                     {report.status}
                   </span>
@@ -205,10 +194,10 @@ const Report = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-[#064C9F] mb-4">
+              <h2 className="text-xl font-semibold text-[#064C9F] mb-4 print:text-lg print:mb-2">
                 Dados da Análise
               </h2>
-              <div className="space-y-2 text-[#1F2937]">
+              <div className="space-y-2 text-[#1F2937] print:space-y-1 print:text-sm">
                 <p>
                   <span className="font-medium">Área Consolidada (ha):</span>{" "}
                   {report.consolidatedArea}
@@ -246,20 +235,20 @@ const Report = () => {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold text-[#064C9F] mb-4">
+            <h2 className="text-xl font-semibold text-[#064C9F] mb-4 print:text-lg print:mb-2">
               Imagens e Sensores
             </h2>
-            <div className="space-y-6">
+            <div className="space-y-6 print:space-y-4">
               {report.images.map((image, index) => (
-                <Card key={index} className="p-4 bg-[#F3F4F6]">
-                  <h3 className="font-medium mb-2 text-[#064C9F]">
+                <Card key={index} className="p-4 bg-[#F3F4F6] print:break-inside-avoid">
+                  <h3 className="font-medium mb-2 text-[#064C9F] print:text-sm">
                     Imagem {index + 1}
                   </h3>
                   <div 
                     ref={el => mapRefs.current[index] = el} 
-                    className="w-full h-48 mb-4 rounded-lg overflow-hidden"
+                    className="w-full h-48 mb-4 rounded-lg overflow-hidden print:h-32"
                   />
-                  <div className="space-y-1 text-sm text-[#1F2937]">
+                  <div className="space-y-1 text-sm text-[#1F2937] print:text-xs">
                     <p>
                       <span className="font-medium">Sensores:</span>{" "}
                       {image.sensor}

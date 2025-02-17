@@ -84,18 +84,22 @@
 
   body {
     padding: 20px;
+    font-size: 12px;
+    line-height: 1.4;
   }
 
   .container {
     width: 100% !important;
     max-width: none !important;
     padding: 0 !important;
+    margin: 0 !important;
   }
 
   /* Garante que os mapas sejam impressos corretamente */
   .map-container {
     page-break-inside: avoid;
     break-inside: avoid;
+    margin-bottom: 1rem;
   }
 
   /* Remove sombras e bordas desnecessárias para impressão */
@@ -105,5 +109,28 @@
 
   .print\:border-none {
     border: none !important;
+  }
+
+  /* Ajustes específicos para impressão */
+  h1, h2, h3 {
+    margin-bottom: 0.5rem !important;
+  }
+
+  p {
+    margin-bottom: 0.25rem !important;
+  }
+
+  .grid {
+    gap: 1rem !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 1rem !important;
+  }
+
+  /* Evita quebra de página dentro de cards */
+  .print\:break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
