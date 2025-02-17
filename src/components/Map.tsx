@@ -121,7 +121,7 @@ const MapComponent = ({ reports, onSelectReport }: MapProps) => {
 
   return (
     <>
-      <div ref={mapElement} className="map-container" />
+      <div ref={mapElement} className="map-container h-[400px] w-full rounded-lg overflow-hidden border border-gray-200 shadow-sm" />
       <div ref={popupRef} className="ol-popup" />
     </>
   );
