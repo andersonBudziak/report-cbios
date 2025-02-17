@@ -12,11 +12,13 @@ import ImageLayer from "ol/layer/Image";
 import Static from "ol/source/ImageStatic";
 import { getCenter } from "ol/extent";
 import OSM from "ol/source/OSM";
+import { useToast } from "@/hooks/use-toast";
 
 const Report = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const mapRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const { toast } = useToast();
 
   // Mock data - replace with actual data fetching
   const report = {
@@ -79,7 +81,32 @@ const Report = () => {
   }, [report.images]);
 
   const handlePrint = () => {
-    console.log("Printing report:", id);
+    try {
+      // Adiciona uma classe temporária para estilização de impressão
+      document.body.classList.add('printing');
+      
+      // Mostra notificação de início da impressão
+      toast({
+        title: "Impressão iniciada",
+        description: "Preparando documento para impressão...",
+      });
+
+      // Abre a janela de impressão do navegador
+      window.print();
+
+      // Remove a classe de impressão
+      document.body.classList.remove('printing');
+
+      // Log para debug
+      console.log("Printing report:", id);
+    } catch (error) {
+      toast({
+        title: "Erro na impressão",
+        description: "Não foi possível imprimir o documento.",
+        variant: "destructive",
+      });
+      console.error("Erro ao imprimir:", error);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -101,7 +128,7 @@ const Report = () => {
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
-            className="flex items-center space-x-2 text-[#1F2937]"
+            className="flex items-center space-x-2 text-[#1F2937] no-print"
             onClick={() => navigate("/")}
           >
             <ArrowLeft className="h-4 w-4" />
@@ -116,14 +143,14 @@ const Report = () => {
         <Button
           onClick={handlePrint}
           variant="outline"
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 no-print"
         >
           <Printer className="h-4 w-4" />
           <span>Imprimir</span>
         </Button>
       </div>
 
-      <Card className="p-6 space-y-8">
+      <Card className="p-6 space-y-8 print:shadow-none print:border-none">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-[#064C9F]">Relatório CBIOs</h1>
           <div className={`px-4 py-2 rounded-full ${getStatusColor(report.status)}`}>
