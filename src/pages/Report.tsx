@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -78,8 +79,20 @@ const Report = () => {
   }, [report.images]);
 
   const handlePrint = () => {
-    // Implement print functionality
     console.log("Printing report:", id);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "ELEGÍVEL":
+        return "bg-green-100 text-green-800";
+      case "NÃO ELEGÍVEL":
+        return "bg-red-100 text-red-800";
+      case "Pendente":
+        return "bg-orange-100 text-orange-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
   };
 
   return (
@@ -111,7 +124,12 @@ const Report = () => {
       </div>
 
       <Card className="p-6 space-y-8">
-        <h1 className="text-3xl font-bold text-[#064C9F]">Relatório CBIOs</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-[#064C9F]">Relatório CBIOs</h1>
+          <div className={`px-4 py-2 rounded-full ${getStatusColor(report.status)}`}>
+            {report.status}
+          </div>
+        </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">
