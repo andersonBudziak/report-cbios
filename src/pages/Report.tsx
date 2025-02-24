@@ -8,11 +8,81 @@ import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import { fromLonLat } from "ol/proj";
 import { useEffect, useRef } from "react";
-import ImageLayer from "ol/layer/Image";
-import Static from "ol/source/ImageStatic";
-import { getCenter } from "ol/extent";
 import OSM from "ol/source/OSM";
 import { useToast } from "@/hooks/use-toast";
+
+const mockReports = {
+  "1": {
+    car: "SP-1234567-123456789",
+    municipality: "São Paulo",
+    state: "SP",
+    carStatus: "ATIVO",
+    registrationDate: "01/01/2021",
+    declaredArea: 1000,
+    status: "ELEGÍVEL",
+    consolidatedArea: 800,
+    biomass: "Soja",
+    analysisYear: 2023,
+    productivity: 3500,
+    harvestReference: "2022/2023",
+    productivePotential: 2800,
+    images: [
+      {
+        sensor: "Sentinel-2",
+        imageId: "S2A_MSIL2A_20230615",
+        date: "15/06/2023",
+        centralCoordinate: [-46.6333, -23.5505],
+      },
+      {
+        sensor: "Sentinel-2",
+        imageId: "S2A_MSIL2A_20230715",
+        date: "15/07/2023",
+        centralCoordinate: [-46.6333, -23.5505],
+      },
+      {
+        sensor: "Sentinel-2",
+        imageId: "S2A_MSIL2A_20230815",
+        date: "15/08/2023",
+        centralCoordinate: [-46.6333, -23.5505],
+      }
+    ],
+  },
+  "2": {
+    car: "MG-7654321-987654321",
+    municipality: "Belo Horizonte",
+    state: "MG",
+    carStatus: "PENDENTE",
+    registrationDate: "15/02/2021",
+    declaredArea: 1500,
+    status: "NÃO ELEGÍVEL",
+    consolidatedArea: 1200,
+    biomass: "Soja",
+    analysisYear: 2023,
+    productivity: 3200,
+    harvestReference: "2022/2023",
+    productivePotential: 2500,
+    images: [
+      {
+        sensor: "Landsat-8",
+        imageId: "LC08_L1TP_20230620",
+        date: "20/06/2023",
+        centralCoordinate: [-43.9378, -19.9208],
+      },
+      {
+        sensor: "Landsat-8",
+        imageId: "LC08_L1TP_20230720",
+        date: "20/07/2023",
+        centralCoordinate: [-43.9378, -19.9208],
+      },
+      {
+        sensor: "Landsat-8",
+        imageId: "LC08_L1TP_20230820",
+        date: "20/08/2023",
+        centralCoordinate: [-43.9378, -19.9208],
+      }
+    ],
+  }
+};
 
 const Report = () => {
   const { id } = useParams();
@@ -20,43 +90,11 @@ const Report = () => {
   const mapRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { toast } = useToast();
 
-  const report = {
-    car: "MT-5108501-70D4821B80A84D2FB942A46B2DC16B41",
-    municipality: "Vera",
-    state: "MT",
-    carStatus: "Ativo",
-    registrationDate: "14/04/2021",
-    declaredArea: 173.78,
-    status: "ELEGÍVEL",
-    consolidatedArea: 80.75,
-    biomass: "Soja",
-    analysisYear: 2023,
-    productivity: 3.773,
-    harvestReference: "22/23",
-    productivePotential: 304.67,
-    images: [
-      {
-        sensor: "S2A",
-        imageId: "S2A_MSIL1C_20170904T140051_N0205_R067_T21LXQ_20170904T140051",
-        date: "04/09/2017",
-        centralCoordinate: [-55.815776, -12.5147015],
-      },
-      {
-        sensor: "S2B",
-        imageId: "S2B_MSIL1C_20230730T135709_N0509_R067_T21LXQ_20230730T171930",
-        date: "30/07/2023",
-        centralCoordinate: [-55.815776, -12.5147015],
-      },
-      {
-        sensor: "S2A",
-        imageId: "S2A_MSIL1C_20240619T135711_N0510_R067_T21LXQ_20240619T171933",
-        date: "19/06/2024",
-        centralCoordinate: [-55.815776, -12.5147015],
-      },
-    ],
-  };
+  const report = id ? mockReports[id] : null;
 
   useEffect(() => {
+    if (!report) return;
+
     report.images.forEach((image, index) => {
       if (!mapRefs.current[index]) return;
 
@@ -77,7 +115,7 @@ const Report = () => {
         map.setTarget(undefined);
       };
     });
-  }, [report.images]);
+  }, [report?.images]);
 
   const handlePrint = () => {
     try {
@@ -115,6 +153,14 @@ const Report = () => {
         return "bg-gray-100 text-gray-800";
     }
   };
+
+  if (!report) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1>Relatório não encontrado</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 print:p-0 print:m-0">
@@ -213,3 +259,4 @@ const Report = () => {
 };
 
 export default Report;
+
