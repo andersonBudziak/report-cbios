@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Map from "@/components/Map";
@@ -10,8 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import OlMap from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
+import XYZ from 'ol/source/XYZ';
 import { fromLonLat } from 'ol/proj';
-import OSM from 'ol/source/OSM';
 
 const mockReports: Report[] = [
   {
@@ -81,7 +80,11 @@ const generateMapImage = async (coordinates: [number, number], containerId: stri
     target: containerId,
     layers: [
       new TileLayer({
-        source: new OSM(),
+        source: new XYZ({
+          url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          maxZoom: 19,
+          attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer">ArcGIS</a>'
+        }),
       }),
     ],
     view: new View({
@@ -91,15 +94,20 @@ const generateMapImage = async (coordinates: [number, number], containerId: stri
   });
 
   return new Promise((resolve) => {
-    map.once('rendercomplete', () => {
-      const canvas = mapElement.querySelector('canvas');
-      const dataUrl = canvas?.toDataURL('image/png');
-      document.body.removeChild(mapElement);
-      map.setTarget(undefined);
-      resolve(dataUrl || '');
-    });
-
-    map.renderSync();
+    setTimeout(() => {
+      map.once('rendercomplete', () => {
+        const canvas = mapElement.querySelector('canvas');
+        if (canvas) {
+          const dataUrl = canvas.toDataURL('image/png', 1.0);
+          document.body.removeChild(mapElement);
+          map.setTarget(undefined);
+          resolve(dataUrl);
+        } else {
+          resolve('');
+        }
+      });
+      map.renderSync();
+    }, 100);
   });
 };
 
@@ -144,9 +152,16 @@ const Index = () => {
         selectedReports.map(async (reportId) => {
           const report = reports.find(r => r.id === reportId);
           if (!report) return null;
+
+          const maps = await Promise.all([
+            generateMapImage(report.coordinates, `map-${report.id}-1`),
+            generateMapImage(report.coordinates, `map-${report.id}-2`),
+            generateMapImage(report.coordinates, `map-${report.id}-3`),
+          ]);
+
           return {
             reportId,
-            mapImage: await generateMapImage(report.coordinates, `map-${report.id}`)
+            mapImages: maps
           };
         })
       );
@@ -274,9 +289,9 @@ const Index = () => {
 
       for (const reportId of selectedReports) {
         const report = reports.find(r => r.id === reportId);
-        const mapImage = mapImages.find(mi => mi?.reportId === reportId)?.mapImage;
+        const reportMaps = mapImages.find(mi => mi?.reportId === reportId)?.mapImages;
         
-        if (report && mapImage) {
+        if (report && reportMaps) {
           const getStatusClass = (status: string) => {
             switch (status) {
               case "ELEGÍVEL":
@@ -329,17 +344,16 @@ const Index = () => {
                 <div class="images-section">
                   <h2>Imagens e Sensores</h2>
                   <div class="images-grid">
-                    ${report.images.map((image, index) => `
+                    ${reportMaps.map((mapImage, index) => `
                       <div class="image-card">
                         <div class="map-container">
                           <img src="${mapImage}" alt="Mapa ${index + 1}" />
                         </div>
                         <div class="image-info">
-                          <div><span class="info-label">Sensores:</span> ${image.sensor}</div>
-                          <div><span class="info-label">Data:</span> ${image.date}</div>
+                          <div><span class="info-label">Sensores:</span> ${report.images[index].sensor}</div>
+                          <div><span class="info-label">Data:</span> ${report.images[index].date}</div>
                           <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            <span class="info-label">ID:</span> ${image.imageId}
-                          </div>
+                            <span class="info-label">ID:</span> ${report.images[index].imageId}</div>
                         </div>
                       </div>
                     `).join('')}
@@ -355,9 +369,29 @@ const Index = () => {
       printWindow.document.close();
 
       printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.print();
-        }, 500);
+        const images = printWindow.document.getElementsByTagName('img');
+        let loadedImages = 0;
+        const totalImages = images.length;
+
+        function tryPrint() {
+          if (loadedImages === totalImages) {
+            setTimeout(() => {
+              printWindow.print();
+            }, 500);
+          }
+        }
+
+        for (let img of images) {
+          if (img.complete) {
+            loadedImages++;
+            tryPrint();
+          } else {
+            img.onload = () => {
+              loadedImages++;
+              tryPrint();
+            };
+          }
+        }
       };
 
       console.log("Printing reports:", selectedReports);
