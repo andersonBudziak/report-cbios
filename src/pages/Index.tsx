@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Map from "@/components/Map";
@@ -102,241 +103,6 @@ const generateMapImage = async (coordinates: [number, number], containerId: stri
   });
 };
 
-const handlePrint = async (selectedReports: string[]) => {
-  if (selectedReports.length === 0) {
-    toast({
-      title: "Nenhum relatório selecionado",
-      description: "Por favor, selecione pelo menos um relatório para imprimir.",
-      variant: "destructive",
-    });
-    return;
-  }
-
-  try {
-    toast({
-      title: "Preparando impressão",
-      description: `Preparando ${selectedReports.length} relatório(s) para impressão...`,
-    });
-
-    const mapImages = await Promise.all(
-      selectedReports.map(async (reportId) => {
-        const report = reports.find(r => r.id === reportId);
-        if (!report) return null;
-        return {
-          reportId,
-          mapImage: await generateMapImage(report.coordinates, `map-${report.id}`)
-        };
-      })
-    );
-
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      throw new Error('Não foi possível abrir a janela de impressão');
-    }
-
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Relatórios CBIOs</title>
-          <style>
-            @media print {
-              body { 
-                margin: 0;
-                padding: 0;
-              }
-              .report-page {
-                page-break-after: always;
-                padding: 16px;
-              }
-              .report-page:last-child {
-                page-break-after: avoid;
-              }
-              .header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 8px;
-              }
-              .logo {
-                height: 24px;
-                width: auto;
-              }
-              .status-badge {
-                padding: 4px 12px;
-                border-radius: 9999px;
-                font-size: 12px;
-              }
-              .status-elegivel {
-                background-color: #dcfce7;
-                color: #166534;
-              }
-              .status-nao-elegivel {
-                background-color: #fee2e2;
-                color: #991b1b;
-              }
-              .title {
-                color: #064C9F;
-                font-size: 20px;
-                font-weight: bold;
-                margin: 0;
-              }
-              .info-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-                margin-bottom: 16px;
-              }
-              .info-section {
-                font-size: 11px;
-              }
-              .info-section h2 {
-                color: #064C9F;
-                font-size: 14px;
-                margin-bottom: 4px;
-              }
-              .info-content {
-                line-height: 1.4;
-              }
-              .info-row {
-                margin-bottom: 2px;
-              }
-              .info-label {
-                font-weight: 500;
-              }
-              .images-section h2 {
-                color: #064C9F;
-                font-size: 14px;
-                margin-bottom: 8px;
-              }
-              .images-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
-              }
-              .image-card {
-                background: #F3F4F6;
-                border-radius: 8px;
-                padding: 8px;
-              }
-              .map-container {
-                width: 100%;
-                height: 200px;
-                margin-bottom: 8px;
-                border-radius: 4px;
-                overflow: hidden;
-              }
-              .map-container img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-              }
-              .image-info {
-                font-size: 10px;
-                line-height: 1.4;
-              }
-            }
-          </style>
-        </head>
-        <body>
-    `);
-
-    for (const reportId of selectedReports) {
-      const report = reports.find(r => r.id === reportId);
-      const mapImage = mapImages.find(mi => mi?.reportId === reportId)?.mapImage;
-      
-      if (report && mapImage) {
-        const getStatusClass = (status: string) => {
-          switch (status) {
-            case "ELEGÍVEL":
-              return "status-elegivel";
-            case "NÃO ELEGÍVEL":
-              return "status-nao-elegivel";
-            default:
-              return "status-pendente";
-          }
-        };
-
-        printWindow.document.write(`
-          <div class="report-page">
-            <div class="header">
-              <img src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png" alt="Merx Logo" class="logo" />
-              <div class="status-badge ${getStatusClass(report.status)}">
-                ${report.status}
-              </div>
-            </div>
-
-            <h1 class="title">Relatório CBIOs</h1>
-
-            <div class="info-grid">
-              <div class="info-section">
-                <h2>Dados da Propriedade</h2>
-                <div class="info-content">
-                  <div class="info-row"><span class="info-label">CAR:</span> ${report.car}</div>
-                  <div class="info-row"><span class="info-label">Município:</span> ${report.municipality}</div>
-                  <div class="info-row"><span class="info-label">UF:</span> ${report.state}</div>
-                  <div class="info-row"><span class="info-label">Status do CAR:</span> ${report.carStatus}</div>
-                  <div class="info-row"><span class="info-label">Data de Registro:</span> ${report.registrationDate}</div>
-                  <div class="info-row"><span class="info-label">Área Declarada:</span> ${report.declaredArea} ha</div>
-                </div>
-              </div>
-
-              <div class="info-section">
-                <h2>Dados da Análise</h2>
-                <div class="info-content">
-                  <div class="info-row"><span class="info-label">Área Consolidada:</span> ${report.consolidatedArea} ha</div>
-                  <div class="info-row"><span class="info-label">Biomassa:</span> ${report.biomass}</div>
-                  <div class="info-row"><span class="info-label">Ano de Análise:</span> ${report.analysisYear}</div>
-                  <div class="info-row"><span class="info-label">Produtividade:</span> ${report.productivity} kg/ha</div>
-                  <div class="info-row"><span class="info-label">Safra de Referência:</span> ${report.harvestReference}</div>
-                  <div class="info-row"><span class="info-label">Potencial Produtivo:</span> ${report.productivePotential} ton</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="images-section">
-              <h2>Imagens e Sensores</h2>
-              <div class="images-grid">
-                ${report.images.map((image, index) => `
-                  <div class="image-card">
-                    <div class="map-container">
-                      <img src="${mapImage}" alt="Mapa ${index + 1}" />
-                    </div>
-                    <div class="image-info">
-                      <div><span class="info-label">Sensores:</span> ${image.sensor}</div>
-                      <div><span class="info-label">Data:</span> ${image.date}</div>
-                      <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <span class="info-label">ID:</span> ${image.imageId}
-                      </div>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        `);
-      }
-    }
-
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-
-    printWindow.onload = () => {
-      setTimeout(() => {
-        printWindow.print();
-      }, 500);
-    };
-
-    console.log("Printing reports:", selectedReports);
-  } catch (error) {
-    toast({
-      title: "Erro na impressão",
-      description: "Não foi possível imprimir os relatórios selecionados.",
-      variant: "destructive",
-    });
-    console.error("Erro ao imprimir:", error);
-  }
-};
-
 const Index = () => {
   const navigate = useNavigate();
   const [reports] = useState<Report[]>(mockReports);
@@ -356,6 +122,253 @@ const Index = () => {
 
   const handleSelectReport = (reportId: string) => {
     navigate(`/report/${reportId}`);
+  };
+
+  const handlePrint = async (selectedReports: string[]) => {
+    if (selectedReports.length === 0) {
+      toast({
+        title: "Nenhum relatório selecionado",
+        description: "Por favor, selecione pelo menos um relatório para imprimir.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      toast({
+        title: "Preparando impressão",
+        description: `Preparando ${selectedReports.length} relatório(s) para impressão...`,
+      });
+
+      const mapImages = await Promise.all(
+        selectedReports.map(async (reportId) => {
+          const report = reports.find(r => r.id === reportId);
+          if (!report) return null;
+          return {
+            reportId,
+            mapImage: await generateMapImage(report.coordinates, `map-${report.id}`)
+          };
+        })
+      );
+
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        throw new Error('Não foi possível abrir a janela de impressão');
+      }
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Relatórios CBIOs</title>
+            <style>
+              @media print {
+                body { 
+                  margin: 0;
+                  padding: 0;
+                }
+                .report-page {
+                  page-break-after: always;
+                  padding: 16px;
+                }
+                .report-page:last-child {
+                  page-break-after: avoid;
+                }
+                .container {
+                  max-width: 100%;
+                  margin: 0 auto;
+                  padding: 0;
+                }
+                .header {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 8px;
+                }
+                .logo {
+                  height: 24px;
+                  width: auto;
+                }
+                .title {
+                  color: #064C9F;
+                  font-size: 24px;
+                  font-weight: bold;
+                  margin-top: 16px;
+                  margin-bottom: 24px;
+                }
+                .status-badge {
+                  padding: 4px 12px;
+                  border-radius: 9999px;
+                  font-size: 12px;
+                }
+                .status-elegivel {
+                  background-color: #dcfce7;
+                  color: #166534;
+                }
+                .status-nao-elegivel {
+                  background-color: #fee2e2;
+                  color: #991b1b;
+                }
+                .info-grid {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 24px;
+                  margin-bottom: 32px;
+                }
+                .info-section h2 {
+                  color: #064C9F;
+                  font-size: 18px;
+                  font-weight: 600;
+                  margin-bottom: 16px;
+                }
+                .info-content {
+                  display: grid;
+                  gap: 8px;
+                }
+                .info-row {
+                  font-size: 14px;
+                  line-height: 1.5;
+                }
+                .info-label {
+                  font-weight: 500;
+                }
+                .images-section {
+                  margin-top: 32px;
+                }
+                .images-section h2 {
+                  color: #064C9F;
+                  font-size: 18px;
+                  font-weight: 600;
+                  margin-bottom: 16px;
+                }
+                .images-grid {
+                  display: grid;
+                  grid-template-columns: repeat(3, 1fr);
+                  gap: 16px;
+                }
+                .image-card {
+                  background: #F3F4F6;
+                  border-radius: 8px;
+                  padding: 16px;
+                }
+                .map-container {
+                  width: 100%;
+                  height: 240px;
+                  margin-bottom: 12px;
+                  border-radius: 4px;
+                  overflow: hidden;
+                }
+                .map-container img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                }
+                .image-info {
+                  font-size: 12px;
+                  line-height: 1.5;
+                }
+              }
+            </style>
+          </head>
+          <body>
+      `);
+
+      for (const reportId of selectedReports) {
+        const report = reports.find(r => r.id === reportId);
+        const mapImage = mapImages.find(mi => mi?.reportId === reportId)?.mapImage;
+        
+        if (report && mapImage) {
+          const getStatusClass = (status: string) => {
+            switch (status) {
+              case "ELEGÍVEL":
+                return "status-elegivel";
+              case "NÃO ELEGÍVEL":
+                return "status-nao-elegivel";
+              default:
+                return "status-pendente";
+            }
+          };
+
+          printWindow.document.write(`
+            <div class="report-page">
+              <div class="container">
+                <div class="header">
+                  <img src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png" alt="Merx Logo" class="logo" />
+                  <div class="status-badge ${getStatusClass(report.status)}">
+                    ${report.status}
+                  </div>
+                </div>
+
+                <h1 class="title">Relatório CBIOs</h1>
+
+                <div class="info-grid">
+                  <div class="info-section">
+                    <h2>Dados da Propriedade</h2>
+                    <div class="info-content">
+                      <div class="info-row"><span class="info-label">CAR:</span> ${report.car}</div>
+                      <div class="info-row"><span class="info-label">Município:</span> ${report.municipality}</div>
+                      <div class="info-row"><span class="info-label">UF:</span> ${report.state}</div>
+                      <div class="info-row"><span class="info-label">Status do CAR:</span> ${report.carStatus}</div>
+                      <div class="info-row"><span class="info-label">Data de Registro:</span> ${report.registrationDate}</div>
+                      <div class="info-row"><span class="info-label">Área Declarada:</span> ${report.declaredArea} ha</div>
+                    </div>
+                  </div>
+
+                  <div class="info-section">
+                    <h2>Dados da Análise</h2>
+                    <div class="info-content">
+                      <div class="info-row"><span class="info-label">Área Consolidada:</span> ${report.consolidatedArea} ha</div>
+                      <div class="info-row"><span class="info-label">Biomassa:</span> ${report.biomass}</div>
+                      <div class="info-row"><span class="info-label">Ano de Análise:</span> ${report.analysisYear}</div>
+                      <div class="info-row"><span class="info-label">Produtividade:</span> ${report.productivity} kg/ha</div>
+                      <div class="info-row"><span class="info-label">Safra de Referência:</span> ${report.harvestReference}</div>
+                      <div class="info-row"><span class="info-label">Potencial Produtivo:</span> ${report.productivePotential} ton</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="images-section">
+                  <h2>Imagens e Sensores</h2>
+                  <div class="images-grid">
+                    ${report.images.map((image, index) => `
+                      <div class="image-card">
+                        <div class="map-container">
+                          <img src="${mapImage}" alt="Mapa ${index + 1}" />
+                        </div>
+                        <div class="image-info">
+                          <div><span class="info-label">Sensores:</span> ${image.sensor}</div>
+                          <div><span class="info-label">Data:</span> ${image.date}</div>
+                          <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <span class="info-label">ID:</span> ${image.imageId}
+                          </div>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `);
+        }
+      }
+
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+
+      printWindow.onload = () => {
+        setTimeout(() => {
+          printWindow.print();
+        }, 500);
+      };
+
+      console.log("Printing reports:", selectedReports);
+    } catch (error) {
+      toast({
+        title: "Erro na impressão",
+        description: "Não foi possível imprimir os relatórios selecionados.",
+        variant: "destructive",
+      });
+      console.error("Erro ao imprimir:", error);
+    }
   };
 
   return (
