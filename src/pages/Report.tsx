@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -116,8 +117,8 @@ const Report = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container mx-auto px-4 py-8 print:p-0 print:m-0">
+      <div className="flex justify-between items-center mb-8 print:mb-2">
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
@@ -131,7 +132,7 @@ const Report = () => {
         <img 
           src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png"
           alt="Merx Logo" 
-          className="h-12 w-auto"
+          className="h-8 w-auto print:h-6"
         />
         <Button
           onClick={handlePrint}
@@ -143,127 +144,63 @@ const Report = () => {
         </Button>
       </div>
 
-      <Card className="p-6 space-y-8 print:shadow-none print:border-none">
-        <div className="flex justify-between items-center print:mb-8">
-          <h1 className="text-3xl font-bold text-[#064C9F] print:text-2xl">Relatório CBIOs</h1>
-          <div className={`px-4 py-2 rounded-full ${getStatusColor(report.status)} print:text-sm`}>
+      <Card className="p-6 space-y-4 print:shadow-none print:border-none print:p-2">
+        <div className="flex justify-between items-center print:mb-2">
+          <h1 className="text-2xl font-bold text-[#064C9F] print:text-xl">Relatório CBIOs</h1>
+          <div className={`px-3 py-1 rounded-full text-sm ${getStatusColor(report.status)} print:text-xs`}>
             {report.status}
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 print:gap-4">
-          <div className="space-y-6 print:space-y-4">
+        <div className="grid grid-cols-3 gap-4 print:gap-2">
+          <div className="space-y-4 print:space-y-2 col-span-1">
             <div>
-              <h2 className="text-xl font-semibold text-[#064C9F] mb-4 print:text-lg print:mb-2">
+              <h2 className="text-lg font-semibold text-[#064C9F] mb-2 print:text-base print:mb-1">
                 Dados da Propriedade
               </h2>
-              <div className="space-y-2 text-[#1F2937] print:space-y-1 print:text-sm">
-                <p>
-                  <span className="font-medium">CAR:</span> {report.car}
-                </p>
-                <p>
-                  <span className="font-medium">Município:</span>{" "}
-                  {report.municipality}
-                </p>
-                <p>
-                  <span className="font-medium">UF:</span> {report.state}
-                </p>
-                <p>
-                  <span className="font-medium">Status do CAR:</span>{" "}
-                  {report.carStatus}
-                </p>
-                <p>
-                  <span className="font-medium">Data de Registro:</span>{" "}
-                  {report.registrationDate}
-                </p>
-                <p>
-                  <span className="font-medium">
-                    Área Declarada do CAR (ha):
-                  </span>{" "}
-                  {report.declaredArea}
-                </p>
-                <p>
-                  <span className="font-medium">Status:</span>{" "}
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${getStatusColor(report.status)}`}
-                  >
-                    {report.status}
-                  </span>
-                </p>
+              <div className="space-y-1 text-sm text-[#1F2937] print:text-xs">
+                <p><span className="font-medium">CAR:</span> {report.car}</p>
+                <p><span className="font-medium">Município:</span> {report.municipality}</p>
+                <p><span className="font-medium">UF:</span> {report.state}</p>
+                <p><span className="font-medium">Status do CAR:</span> {report.carStatus}</p>
+                <p><span className="font-medium">Data de Registro:</span> {report.registrationDate}</p>
+                <p><span className="font-medium">Área Declarada:</span> {report.declaredArea} ha</p>
               </div>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-[#064C9F] mb-4 print:text-lg print:mb-2">
+              <h2 className="text-lg font-semibold text-[#064C9F] mb-2 print:text-base print:mb-1">
                 Dados da Análise
               </h2>
-              <div className="space-y-2 text-[#1F2937] print:space-y-1 print:text-sm">
-                <p>
-                  <span className="font-medium">Área Consolidada (ha):</span>{" "}
-                  {report.consolidatedArea}
-                </p>
-                <p>
-                  <span className="font-medium">Biomassa:</span>{" "}
-                  {report.biomass}
-                </p>
-                <p>
-                  <span className="font-medium">
-                    Ano de Referência da Análise:
-                  </span>{" "}
-                  {report.analysisYear}
-                </p>
-                <p>
-                  <span className="font-medium">
-                    Produtividade CONAB (kg/ha):
-                  </span>{" "}
-                  {report.productivity}
-                </p>
-                <p>
-                  <span className="font-medium">
-                    Safra de Referência (CONAB):
-                  </span>{" "}
-                  {report.harvestReference}
-                </p>
-                <p>
-                  <span className="font-medium">
-                    Potencial Produtivo (ton):
-                  </span>{" "}
-                  {report.productivePotential}
-                </p>
+              <div className="space-y-1 text-sm text-[#1F2937] print:text-xs">
+                <p><span className="font-medium">Área Consolidada:</span> {report.consolidatedArea} ha</p>
+                <p><span className="font-medium">Biomassa:</span> {report.biomass}</p>
+                <p><span className="font-medium">Ano de Análise:</span> {report.analysisYear}</p>
+                <p><span className="font-medium">Produtividade:</span> {report.productivity} kg/ha</p>
+                <p><span className="font-medium">Safra de Referência:</span> {report.harvestReference}</p>
+                <p><span className="font-medium">Potencial Produtivo:</span> {report.productivePotential} ton</p>
               </div>
             </div>
           </div>
 
-          <div>
-            <h2 className="text-xl font-semibold text-[#064C9F] mb-4 print:text-lg print:mb-2">
+          <div className="col-span-2">
+            <h2 className="text-lg font-semibold text-[#064C9F] mb-2 print:text-base print:mb-1">
               Imagens e Sensores
             </h2>
-            <div className="space-y-6 print:space-y-4">
+            <div className="grid grid-cols-3 gap-2">
               {report.images.map((image, index) => (
-                <Card key={index} className="p-4 bg-[#F3F4F6] print:break-inside-avoid">
-                  <h3 className="font-medium mb-2 text-[#064C9F] print:text-sm">
+                <Card key={index} className="p-2 bg-[#F3F4F6] print:break-inside-avoid">
+                  <h3 className="font-medium mb-1 text-[#064C9F] text-sm print:text-xs">
                     Imagem {index + 1}
                   </h3>
                   <div 
                     ref={el => mapRefs.current[index] = el} 
-                    className="w-full h-48 mb-4 rounded-lg overflow-hidden print:h-32"
+                    className="w-full h-24 mb-2 rounded-lg overflow-hidden"
                   />
-                  <div className="space-y-1 text-sm text-[#1F2937] print:text-xs">
-                    <p>
-                      <span className="font-medium">Sensores:</span>{" "}
-                      {image.sensor}
-                    </p>
-                    <p>
-                      <span className="font-medium">ID da Imagem:</span>{" "}
-                      {image.imageId}
-                    </p>
-                    <p>
-                      <span className="font-medium">Data:</span> {image.date}
-                    </p>
-                    <p>
-                      <span className="font-medium">Coordenada Central:</span>{" "}
-                      {image.centralCoordinate.join(", ")}
-                    </p>
+                  <div className="space-y-0.5 text-xs text-[#1F2937] print:text-[10px]">
+                    <p><span className="font-medium">Sensores:</span> {image.sensor}</p>
+                    <p><span className="font-medium">Data:</span> {image.date}</p>
+                    <p className="truncate"><span className="font-medium">ID:</span> {image.imageId}</p>
                   </div>
                 </Card>
               ))}
