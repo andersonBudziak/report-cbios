@@ -272,7 +272,7 @@ const Index = () => {
                 }
                 .map-container {
                   width: 100%;
-                  height: 180px;
+                  height: 200px;
                   margin-bottom: 12px;
                   border-radius: 4px;
                   overflow: hidden;
@@ -288,7 +288,7 @@ const Index = () => {
                 }
                 @page {
                   margin: 0;
-                  size: A4 portrait;
+                  size: A4 landscape;
                 }
               }
             </style>
