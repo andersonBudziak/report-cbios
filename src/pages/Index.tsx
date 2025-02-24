@@ -7,7 +7,7 @@ import { Report } from "@/types/report";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Map from 'ol/Map';
+import OlMap from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import { fromLonLat } from 'ol/proj';
@@ -45,7 +45,7 @@ const Index = () => {
     document.body.appendChild(mapElement);
 
     // Inicializar o mapa
-    const map = new Map({
+    const map = new OlMap({
       target: containerId,
       layers: [
         new TileLayer({
