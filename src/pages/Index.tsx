@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Map from "@/components/Map";
@@ -92,14 +91,12 @@ const Index = () => {
   };
 
   const generateMapImage = async (coordinates: [number, number], containerId: string) => {
-    // Criar um elemento temporário para o mapa
     const mapElement = document.createElement('div');
     mapElement.style.width = '600px';
     mapElement.style.height = '400px';
     mapElement.id = containerId;
     document.body.appendChild(mapElement);
 
-    // Inicializar o mapa
     const map = new OlMap({
       target: containerId,
       layers: [
@@ -113,14 +110,11 @@ const Index = () => {
       }),
     });
 
-    // Aguardar o carregamento do mapa
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Capturar o canvas do mapa
     const canvas = mapElement.querySelector('canvas');
     const dataUrl = canvas?.toDataURL('image/png');
 
-    // Limpar
     document.body.removeChild(mapElement);
 
     return dataUrl;
@@ -147,112 +141,107 @@ const Index = () => {
         throw new Error('Não foi possível abrir a janela de impressão');
       }
 
-      // HTML base para a nova janela
       printWindow.document.write(`
         <html>
           <head>
             <title>Relatórios CBIOs</title>
-            <link rel="stylesheet" href="/src/index.css">
             <style>
-              body { 
-                font-family: Arial, sans-serif;
-                padding: 20px;
-              }
-              .report { 
-                page-break-after: always;
-                max-width: 1200px;
-                margin: 0 auto;
-              }
-              .report:last-child { 
-                page-break-after: avoid;
-              }
-              .header { 
-                text-align: center;
-                margin-bottom: 20px;
-                padding: 20px;
-                border-bottom: 2px solid #064C9F;
-              }
-              .content {
-                margin: 20px;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-              }
-              .map-section {
-                grid-column: span 2;
-                margin: 20px 0;
-              }
-              .map-container {
-                width: 100%;
-                height: 400px;
-                margin-bottom: 20px;
-              }
-              .map-image {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 8px;
-              }
-              table { 
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 20px;
-                background: white;
-              }
-              th, td { 
-                padding: 12px;
-                text-align: left;
-                border: 1px solid #e2e8f0;
-              }
-              th { 
-                background-color: #f8fafc;
-                font-weight: 600;
-                color: #064C9F;
-              }
-              .status-badge {
-                display: inline-block;
-                padding: 4px 12px;
-                border-radius: 9999px;
-                font-weight: 500;
-                font-size: 14px;
-              }
-              .status-elegivel {
-                background-color: #dcfce7;
-                color: #166534;
-              }
-              .status-nao-elegivel {
-                background-color: #fee2e2;
-                color: #991b1b;
-              }
-              .status-pendente {
-                background-color: #fff7ed;
-                color: #9a3412;
-              }
-              .logo {
-                height: 48px;
-                width: auto;
-              }
-              .satellite-images {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 16px;
-                margin-top: 20px;
-              }
-              .satellite-image {
-                border: 1px solid #e2e8f0;
-                border-radius: 8px;
-                padding: 12px;
-              }
-              .satellite-info {
-                margin-top: 8px;
-                font-size: 14px;
+              @media print {
+                body { 
+                  margin: 0;
+                  padding: 0;
+                }
+                .report-page {
+                  page-break-after: always;
+                  padding: 16px;
+                }
+                .report-page:last-child {
+                  page-break-after: avoid;
+                }
+                .header {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 8px;
+                }
+                .logo {
+                  height: 24px;
+                  width: auto;
+                }
+                .status-badge {
+                  padding: 4px 12px;
+                  border-radius: 9999px;
+                  font-size: 12px;
+                }
+                .status-elegivel {
+                  background-color: #dcfce7;
+                  color: #166534;
+                }
+                .status-nao-elegivel {
+                  background-color: #fee2e2;
+                  color: #991b1b;
+                }
+                .title {
+                  color: #064C9F;
+                  font-size: 20px;
+                  font-weight: bold;
+                  margin: 0;
+                }
+                .info-grid {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 8px;
+                  margin-bottom: 16px;
+                }
+                .info-section {
+                  font-size: 11px;
+                }
+                .info-section h2 {
+                  color: #064C9F;
+                  font-size: 14px;
+                  margin-bottom: 4px;
+                }
+                .info-content {
+                  line-height: 1.4;
+                }
+                .info-row {
+                  margin-bottom: 2px;
+                }
+                .info-label {
+                  font-weight: 500;
+                }
+                .images-section h2 {
+                  color: #064C9F;
+                  font-size: 14px;
+                  margin-bottom: 8px;
+                }
+                .images-grid {
+                  display: grid;
+                  grid-template-columns: repeat(3, 1fr);
+                  gap: 8px;
+                }
+                .image-card {
+                  background: #F3F4F6;
+                  border-radius: 8px;
+                  padding: 8px;
+                }
+                .map-container {
+                  width: 100%;
+                  height: 200px;
+                  margin-bottom: 8px;
+                  border-radius: 4px;
+                  overflow: hidden;
+                }
+                .image-info {
+                  font-size: 10px;
+                  line-height: 1.4;
+                }
               }
             </style>
           </head>
           <body>
       `);
 
-      // Adicionar cada relatório selecionado à janela de impressão
       for (const reportId of selectedReports) {
         const report = reports.find(r => r.id === reportId);
         if (report) {
@@ -270,94 +259,59 @@ const Index = () => {
           };
 
           printWindow.document.write(`
-            <div class="report">
+            <div class="report-page">
               <div class="header">
                 <img src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png" alt="Merx Logo" class="logo" />
-                <h1 style="color: #064C9F; margin-top: 16px;">Relatório CBIOs</h1>
-                <h2 style="color: #64748b;">CAR: ${report.car}</h2>
                 <div class="status-badge ${getStatusClass(report.status)}">
                   ${report.status}
                 </div>
               </div>
 
-              <div class="content">
-                <div>
-                  <h3 style="color: #064C9F; margin-bottom: 16px;">Dados da Propriedade</h3>
-                  <table>
-                    <tr>
-                      <td>Município</td>
-                      <td>${report.municipality}</td>
-                    </tr>
-                    <tr>
-                      <td>Estado</td>
-                      <td>${report.state}</td>
-                    </tr>
-                    <tr>
-                      <td>Status do CAR</td>
-                      <td>${report.carStatus}</td>
-                    </tr>
-                    <tr>
-                      <td>Data de Registro</td>
-                      <td>${report.registrationDate}</td>
-                    </tr>
-                    <tr>
-                      <td>Área Declarada</td>
-                      <td>${report.declaredArea} ha</td>
-                    </tr>
-                  </table>
-                </div>
+              <h1 class="title">Relatório CBIOs</h1>
 
-                <div>
-                  <h3 style="color: #064C9F; margin-bottom: 16px;">Dados da Análise</h3>
-                  <table>
-                    <tr>
-                      <td>Área Consolidada</td>
-                      <td>${report.consolidatedArea} ha</td>
-                    </tr>
-                    <tr>
-                      <td>Biomassa</td>
-                      <td>${report.biomass}</td>
-                    </tr>
-                    <tr>
-                      <td>Ano de Análise</td>
-                      <td>${report.analysisYear}</td>
-                    </tr>
-                    <tr>
-                      <td>Produtividade</td>
-                      <td>${report.productivity} kg/ha</td>
-                    </tr>
-                    <tr>
-                      <td>Safra de Referência</td>
-                      <td>${report.harvestReference}</td>
-                    </tr>
-                    <tr>
-                      <td>Potencial Produtivo</td>
-                      <td>${report.productivePotential} ton</td>
-                    </tr>
-                  </table>
-                </div>
-
-                <div class="map-section">
-                  <h3 style="color: #064C9F; margin-bottom: 16px;">Localização</h3>
-                  <div class="map-container">
-                    <img src="${mapImageData}" alt="Mapa da propriedade" class="map-image" />
+              <div class="info-grid">
+                <div class="info-section">
+                  <h2>Dados da Propriedade</h2>
+                  <div class="info-content">
+                    <div class="info-row"><span class="info-label">CAR:</span> ${report.car}</div>
+                    <div class="info-row"><span class="info-label">Município:</span> ${report.municipality}</div>
+                    <div class="info-row"><span class="info-label">UF:</span> ${report.state}</div>
+                    <div class="info-row"><span class="info-label">Status do CAR:</span> ${report.carStatus}</div>
+                    <div class="info-row"><span class="info-label">Data de Registro:</span> ${report.registrationDate}</div>
+                    <div class="info-row"><span class="info-label">Área Declarada:</span> ${report.declaredArea} ha</div>
                   </div>
                 </div>
 
-                <div style="grid-column: span 2;">
-                  <h3 style="color: #064C9F; margin-bottom: 16px;">Imagens e Sensores</h3>
-                  <div class="satellite-images">
-                    ${report.images.map(image => `
-                      <div class="satellite-image">
-                        <div style="width: 100%; height: 200px; background-color: #f8fafc; border-radius: 4px;"></div>
-                        <div class="satellite-info">
-                          <p><strong>Sensor:</strong> ${image.sensor}</p>
-                          <p><strong>Data:</strong> ${image.date}</p>
-                          <p><strong>ID:</strong> ${image.imageId}</p>
+                <div class="info-section">
+                  <h2>Dados da Análise</h2>
+                  <div class="info-content">
+                    <div class="info-row"><span class="info-label">Área Consolidada:</span> ${report.consolidatedArea} ha</div>
+                    <div class="info-row"><span class="info-label">Biomassa:</span> ${report.biomass}</div>
+                    <div class="info-row"><span class="info-label">Ano de Análise:</span> ${report.analysisYear}</div>
+                    <div class="info-row"><span class="info-label">Produtividade:</span> ${report.productivity} kg/ha</div>
+                    <div class="info-row"><span class="info-label">Safra de Referência:</span> ${report.harvestReference}</div>
+                    <div class="info-row"><span class="info-label">Potencial Produtivo:</span> ${report.productivePotential} ton</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="images-section">
+                <h2>Imagens e Sensores</h2>
+                <div class="images-grid">
+                  ${report.images.map((image, index) => `
+                    <div class="image-card">
+                      <div class="map-container">
+                        <img src="${mapImageData}" alt="Mapa ${index + 1}" style="width: 100%; height: 100%; object-fit: cover;" />
+                      </div>
+                      <div class="image-info">
+                        <div><span class="info-label">Sensores:</span> ${image.sensor}</div>
+                        <div><span class="info-label">Data:</span> ${image.date}</div>
+                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          <span class="info-label">ID:</span> ${image.imageId}
                         </div>
                       </div>
-                    `).join('')}
-                  </div>
+                    </div>
+                  `).join('')}
                 </div>
               </div>
             </div>
@@ -365,11 +319,9 @@ const Index = () => {
         }
       }
 
-      // Fecha o HTML e imprime
       printWindow.document.write('</body></html>');
       printWindow.document.close();
 
-      // Espera o conteúdo carregar antes de imprimir
       printWindow.onload = () => {
         printWindow.print();
       };
