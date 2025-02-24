@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import OlMap from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
-import XYZ from 'ol/source/XYZ';
+import OSM from 'ol/source/OSM';
 import { fromLonLat } from 'ol/proj';
 
 const mockReports: Report[] = [
@@ -80,11 +80,7 @@ const generateMapImage = async (coordinates: [number, number], containerId: stri
     target: containerId,
     layers: [
       new TileLayer({
-        source: new XYZ({
-          url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-          maxZoom: 19,
-          attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer">ArcGIS</a>'
-        }),
+        source: new OSM(),
       }),
     ],
     view: new View({
@@ -350,10 +346,10 @@ const Index = () => {
                           <img src="${mapImage}" alt="Mapa ${index + 1}" />
                         </div>
                         <div class="image-info">
-                          <div><span class="info-label">Sensores:</span> ${report.images[index].sensor}</div>
-                          <div><span class="info-label">Data:</span> ${report.images[index].date}</div>
+                          <div><span class="info-label">Sensores:</span> ${report.images[0].sensor}</div>
+                          <div><span class="info-label">Data:</span> ${report.images[0].date}</div>
                           <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            <span class="info-label">ID:</span> ${report.images[index].imageId}</div>
+                            <span class="info-label">ID:</span> ${report.images[0].imageId}</div>
                         </div>
                       </div>
                     `).join('')}
