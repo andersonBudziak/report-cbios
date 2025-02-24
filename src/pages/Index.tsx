@@ -6,6 +6,7 @@ import { ReportList } from "@/components/ReportList";
 import { Report } from "@/types/report";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const mockReports: Report[] = [
   {
@@ -69,6 +70,7 @@ const Index = () => {
   const [reports] = useState<Report[]>(mockReports);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredReports, setFilteredReports] = useState(reports);
+  const { toast } = useToast();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
@@ -84,9 +86,140 @@ const Index = () => {
     navigate(`/report/${reportId}`);
   };
 
-  const handlePrint = (selectedReports: string[]) => {
-    // Implement print functionality
-    console.log("Printing reports:", selectedReports);
+  const handlePrint = async (selectedReports: string[]) => {
+    if (selectedReports.length === 0) {
+      toast({
+        title: "Nenhum relatório selecionado",
+        description: "Por favor, selecione pelo menos um relatório para imprimir.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      toast({
+        title: "Preparando impressão",
+        description: `Preparando ${selectedReports.length} relatório(s) para impressão...`,
+      });
+
+      // Cria uma nova janela para cada relatório selecionado
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        throw new Error('Não foi possível abrir a janela de impressão');
+      }
+
+      // HTML base para a nova janela
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Relatórios CBIOs</title>
+            <link rel="stylesheet" href="/src/index.css">
+            <style>
+              body { font-family: Arial, sans-serif; }
+              .report { page-break-after: always; }
+              .report:last-child { page-break-after: avoid; }
+              .header { text-align: center; margin-bottom: 20px; }
+              .content { margin: 20px; }
+              table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+              th, td { padding: 8px; text-align: left; border: 1px solid #ddd; }
+              th { background-color: #f5f5f5; }
+            </style>
+          </head>
+          <body>
+      `);
+
+      // Adiciona cada relatório selecionado à janela de impressão
+      selectedReports.forEach((reportId) => {
+        const report = reports.find(r => r.id === reportId);
+        if (report) {
+          printWindow.document.write(`
+            <div class="report">
+              <div class="header">
+                <h1>Relatório CBIOs</h1>
+                <h2>CAR: ${report.car}</h2>
+              </div>
+              <div class="content">
+                <table>
+                  <tr>
+                    <th colspan="2">Dados da Propriedade</th>
+                  </tr>
+                  <tr>
+                    <td>Município</td>
+                    <td>${report.municipality}</td>
+                  </tr>
+                  <tr>
+                    <td>Estado</td>
+                    <td>${report.state}</td>
+                  </tr>
+                  <tr>
+                    <td>Status</td>
+                    <td>${report.status}</td>
+                  </tr>
+                  <tr>
+                    <td>Área Declarada</td>
+                    <td>${report.declaredArea} ha</td>
+                  </tr>
+                  <tr>
+                    <td>Data de Registro</td>
+                    <td>${report.registrationDate}</td>
+                  </tr>
+                </table>
+
+                <table>
+                  <tr>
+                    <th colspan="2">Dados da Análise</th>
+                  </tr>
+                  <tr>
+                    <td>Área Consolidada</td>
+                    <td>${report.consolidatedArea} ha</td>
+                  </tr>
+                  <tr>
+                    <td>Biomassa</td>
+                    <td>${report.biomass}</td>
+                  </tr>
+                  <tr>
+                    <td>Ano de Análise</td>
+                    <td>${report.analysisYear}</td>
+                  </tr>
+                  <tr>
+                    <td>Produtividade</td>
+                    <td>${report.productivity} kg/ha</td>
+                  </tr>
+                  <tr>
+                    <td>Safra de Referência</td>
+                    <td>${report.harvestReference}</td>
+                  </tr>
+                  <tr>
+                    <td>Potencial Produtivo</td>
+                    <td>${report.productivePotential} ton</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          `);
+        }
+      });
+
+      // Fecha o HTML e imprime
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+
+      // Espera o conteúdo carregar antes de imprimir
+      printWindow.onload = () => {
+        printWindow.print();
+        // Fecha a janela após a impressão (opcional)
+        // printWindow.close();
+      };
+
+      console.log("Printing reports:", selectedReports);
+    } catch (error) {
+      toast({
+        title: "Erro na impressão",
+        description: "Não foi possível imprimir os relatórios selecionados.",
+        variant: "destructive",
+      });
+      console.error("Erro ao imprimir:", error);
+    }
   };
 
   return (
