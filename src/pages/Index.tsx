@@ -7,63 +7,13 @@ import { Report } from "@/types/report";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import Map from 'ol/Map';
+import View from 'ol/View';
+import TileLayer from 'ol/layer/Tile';
+import { fromLonLat } from 'ol/proj';
+import OSM from 'ol/source/OSM';
 
-const mockReports: Report[] = [
-  {
-    id: "1",
-    car: "MT-5108501-70D4821B80A84D2FB942A46B2DC16B41",
-    municipality: "Vera",
-    state: "MT",
-    carStatus: "Ativo",
-    registrationDate: "14/04/2021",
-    declaredArea: 173.78,
-    status: "ELEGÍVEL",
-    consolidatedArea: 80.75,
-    biomass: "Soja",
-    analysisYear: 2023,
-    productivity: 3.773,
-    harvestReference: "22/23",
-    productivePotential: 304.67,
-    coordinates: [-55.815776, -12.5147015],
-    images: [/* ... keep existing code */],
-  },
-  {
-    id: "2",
-    car: "MT-5103403-7DE5821C70B84D2FB942A46B2DC16B42",
-    municipality: "Cuiabá",
-    state: "MT",
-    carStatus: "Ativo",
-    registrationDate: "22/05/2021",
-    declaredArea: 245.32,
-    status: "ELEGÍVEL",
-    consolidatedArea: 180.45,
-    biomass: "Soja",
-    analysisYear: 2023,
-    productivity: 4.123,
-    harvestReference: "22/23",
-    productivePotential: 743.89,
-    coordinates: [-55.715776, -12.4147015],
-    images: [/* ... keep existing code */],
-  },
-  {
-    id: "3",
-    car: "MT-5103452-8FE5821C70B84D2FB942A46B2DC16B43",
-    municipality: "Sinop",
-    state: "MT",
-    carStatus: "Pendente",
-    registrationDate: "30/06/2021",
-    declaredArea: 312.65,
-    status: "NÃO ELEGÍVEL",
-    consolidatedArea: 290.15,
-    biomass: "Soja",
-    analysisYear: 2023,
-    productivity: 3.892,
-    harvestReference: "22/23",
-    productivePotential: 1129.26,
-    coordinates: [-55.915776, -12.6147015],
-    images: [/* ... keep existing code */],
-  }
-];
+const mockReports: Report[] = [/* ... keep existing code */];
 
 const Index = () => {
   const navigate = useNavigate();
@@ -86,6 +36,41 @@ const Index = () => {
     navigate(`/report/${reportId}`);
   };
 
+  const generateMapImage = async (coordinates: [number, number], containerId: string) => {
+    // Criar um elemento temporário para o mapa
+    const mapElement = document.createElement('div');
+    mapElement.style.width = '600px';
+    mapElement.style.height = '400px';
+    mapElement.id = containerId;
+    document.body.appendChild(mapElement);
+
+    // Inicializar o mapa
+    const map = new Map({
+      target: containerId,
+      layers: [
+        new TileLayer({
+          source: new OSM(),
+        }),
+      ],
+      view: new View({
+        center: fromLonLat(coordinates),
+        zoom: 13,
+      }),
+    });
+
+    // Aguardar o carregamento do mapa
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Capturar o canvas do mapa
+    const canvas = mapElement.querySelector('canvas');
+    const dataUrl = canvas?.toDataURL('image/png');
+
+    // Limpar
+    document.body.removeChild(mapElement);
+
+    return dataUrl;
+  };
+
   const handlePrint = async (selectedReports: string[]) => {
     if (selectedReports.length === 0) {
       toast({
@@ -102,7 +87,6 @@ const Index = () => {
         description: `Preparando ${selectedReports.length} relatório(s) para impressão...`,
       });
 
-      // Cria uma nova janela para cada relatório selecionado
       const printWindow = window.open('', '_blank');
       if (!printWindow) {
         throw new Error('Não foi possível abrir a janela de impressão');
@@ -115,90 +99,216 @@ const Index = () => {
             <title>Relatórios CBIOs</title>
             <link rel="stylesheet" href="/src/index.css">
             <style>
-              body { font-family: Arial, sans-serif; }
-              .report { page-break-after: always; }
-              .report:last-child { page-break-after: avoid; }
-              .header { text-align: center; margin-bottom: 20px; }
-              .content { margin: 20px; }
-              table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-              th, td { padding: 8px; text-align: left; border: 1px solid #ddd; }
-              th { background-color: #f5f5f5; }
+              body { 
+                font-family: Arial, sans-serif;
+                padding: 20px;
+              }
+              .report { 
+                page-break-after: always;
+                max-width: 1200px;
+                margin: 0 auto;
+              }
+              .report:last-child { 
+                page-break-after: avoid;
+              }
+              .header { 
+                text-align: center;
+                margin-bottom: 20px;
+                padding: 20px;
+                border-bottom: 2px solid #064C9F;
+              }
+              .content {
+                margin: 20px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+              }
+              .map-section {
+                grid-column: span 2;
+                margin: 20px 0;
+              }
+              .map-container {
+                width: 100%;
+                height: 400px;
+                margin-bottom: 20px;
+              }
+              .map-image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 8px;
+              }
+              table { 
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+                background: white;
+              }
+              th, td { 
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #e2e8f0;
+              }
+              th { 
+                background-color: #f8fafc;
+                font-weight: 600;
+                color: #064C9F;
+              }
+              .status-badge {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 9999px;
+                font-weight: 500;
+                font-size: 14px;
+              }
+              .status-elegivel {
+                background-color: #dcfce7;
+                color: #166534;
+              }
+              .status-nao-elegivel {
+                background-color: #fee2e2;
+                color: #991b1b;
+              }
+              .status-pendente {
+                background-color: #fff7ed;
+                color: #9a3412;
+              }
+              .logo {
+                height: 48px;
+                width: auto;
+              }
+              .satellite-images {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 16px;
+                margin-top: 20px;
+              }
+              .satellite-image {
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 12px;
+              }
+              .satellite-info {
+                margin-top: 8px;
+                font-size: 14px;
+              }
             </style>
           </head>
           <body>
       `);
 
-      // Adiciona cada relatório selecionado à janela de impressão
-      selectedReports.forEach((reportId) => {
+      // Adicionar cada relatório selecionado à janela de impressão
+      for (const reportId of selectedReports) {
         const report = reports.find(r => r.id === reportId);
         if (report) {
+          const mapImageData = await generateMapImage(report.coordinates, `map-${report.id}`);
+          
+          const getStatusClass = (status: string) => {
+            switch (status) {
+              case "ELEGÍVEL":
+                return "status-elegivel";
+              case "NÃO ELEGÍVEL":
+                return "status-nao-elegivel";
+              default:
+                return "status-pendente";
+            }
+          };
+
           printWindow.document.write(`
             <div class="report">
               <div class="header">
-                <h1>Relatório CBIOs</h1>
-                <h2>CAR: ${report.car}</h2>
+                <img src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png" alt="Merx Logo" class="logo" />
+                <h1 style="color: #064C9F; margin-top: 16px;">Relatório CBIOs</h1>
+                <h2 style="color: #64748b;">CAR: ${report.car}</h2>
+                <div class="status-badge ${getStatusClass(report.status)}">
+                  ${report.status}
+                </div>
               </div>
-              <div class="content">
-                <table>
-                  <tr>
-                    <th colspan="2">Dados da Propriedade</th>
-                  </tr>
-                  <tr>
-                    <td>Município</td>
-                    <td>${report.municipality}</td>
-                  </tr>
-                  <tr>
-                    <td>Estado</td>
-                    <td>${report.state}</td>
-                  </tr>
-                  <tr>
-                    <td>Status</td>
-                    <td>${report.status}</td>
-                  </tr>
-                  <tr>
-                    <td>Área Declarada</td>
-                    <td>${report.declaredArea} ha</td>
-                  </tr>
-                  <tr>
-                    <td>Data de Registro</td>
-                    <td>${report.registrationDate}</td>
-                  </tr>
-                </table>
 
-                <table>
-                  <tr>
-                    <th colspan="2">Dados da Análise</th>
-                  </tr>
-                  <tr>
-                    <td>Área Consolidada</td>
-                    <td>${report.consolidatedArea} ha</td>
-                  </tr>
-                  <tr>
-                    <td>Biomassa</td>
-                    <td>${report.biomass}</td>
-                  </tr>
-                  <tr>
-                    <td>Ano de Análise</td>
-                    <td>${report.analysisYear}</td>
-                  </tr>
-                  <tr>
-                    <td>Produtividade</td>
-                    <td>${report.productivity} kg/ha</td>
-                  </tr>
-                  <tr>
-                    <td>Safra de Referência</td>
-                    <td>${report.harvestReference}</td>
-                  </tr>
-                  <tr>
-                    <td>Potencial Produtivo</td>
-                    <td>${report.productivePotential} ton</td>
-                  </tr>
-                </table>
+              <div class="content">
+                <div>
+                  <h3 style="color: #064C9F; margin-bottom: 16px;">Dados da Propriedade</h3>
+                  <table>
+                    <tr>
+                      <td>Município</td>
+                      <td>${report.municipality}</td>
+                    </tr>
+                    <tr>
+                      <td>Estado</td>
+                      <td>${report.state}</td>
+                    </tr>
+                    <tr>
+                      <td>Status do CAR</td>
+                      <td>${report.carStatus}</td>
+                    </tr>
+                    <tr>
+                      <td>Data de Registro</td>
+                      <td>${report.registrationDate}</td>
+                    </tr>
+                    <tr>
+                      <td>Área Declarada</td>
+                      <td>${report.declaredArea} ha</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <div>
+                  <h3 style="color: #064C9F; margin-bottom: 16px;">Dados da Análise</h3>
+                  <table>
+                    <tr>
+                      <td>Área Consolidada</td>
+                      <td>${report.consolidatedArea} ha</td>
+                    </tr>
+                    <tr>
+                      <td>Biomassa</td>
+                      <td>${report.biomass}</td>
+                    </tr>
+                    <tr>
+                      <td>Ano de Análise</td>
+                      <td>${report.analysisYear}</td>
+                    </tr>
+                    <tr>
+                      <td>Produtividade</td>
+                      <td>${report.productivity} kg/ha</td>
+                    </tr>
+                    <tr>
+                      <td>Safra de Referência</td>
+                      <td>${report.harvestReference}</td>
+                    </tr>
+                    <tr>
+                      <td>Potencial Produtivo</td>
+                      <td>${report.productivePotential} ton</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <div class="map-section">
+                  <h3 style="color: #064C9F; margin-bottom: 16px;">Localização</h3>
+                  <div class="map-container">
+                    <img src="${mapImageData}" alt="Mapa da propriedade" class="map-image" />
+                  </div>
+                </div>
+
+                <div style="grid-column: span 2;">
+                  <h3 style="color: #064C9F; margin-bottom: 16px;">Imagens e Sensores</h3>
+                  <div class="satellite-images">
+                    ${report.images.map(image => `
+                      <div class="satellite-image">
+                        <div style="width: 100%; height: 200px; background-color: #f8fafc; border-radius: 4px;"></div>
+                        <div class="satellite-info">
+                          <p><strong>Sensor:</strong> ${image.sensor}</p>
+                          <p><strong>Data:</strong> ${image.date}</p>
+                          <p><strong>ID:</strong> ${image.imageId}</p>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
               </div>
             </div>
           `);
         }
-      });
+      }
 
       // Fecha o HTML e imprime
       printWindow.document.write('</body></html>');
@@ -207,8 +317,6 @@ const Index = () => {
       // Espera o conteúdo carregar antes de imprimir
       printWindow.onload = () => {
         printWindow.print();
-        // Fecha a janela após a impressão (opcional)
-        // printWindow.close();
       };
 
       console.log("Printing reports:", selectedReports);
