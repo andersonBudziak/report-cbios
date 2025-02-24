@@ -13,7 +13,62 @@ import TileLayer from 'ol/layer/Tile';
 import { fromLonLat } from 'ol/proj';
 import OSM from 'ol/source/OSM';
 
-const mockReports: Report[] = [/* ... keep existing code */];
+const mockReports: Report[] = [
+  {
+    id: "1",
+    car: "SP-1234567-123456789",
+    municipality: "São Paulo",
+    state: "SP",
+    carStatus: "ATIVO",
+    registrationDate: "2021-01-01",
+    declaredArea: 1000,
+    status: "ELEGÍVEL",
+    consolidatedArea: 800,
+    biomass: "Alta",
+    analysisYear: 2023,
+    productivity: 3500,
+    harvestReference: "2022/2023",
+    productivePotential: 2800,
+    coordinates: [-46.6333, -23.5505],
+    images: [
+      {
+        id: "1",
+        sensor: "Sentinel-2",
+        imageId: "S2A_MSIL2A_20230615",
+        date: "2023-06-15",
+        centralCoordinate: [-46.6333, -23.5505],
+        url: "https://example.com/image1.jpg"
+      }
+    ]
+  },
+  {
+    id: "2",
+    car: "MG-7654321-987654321",
+    municipality: "Belo Horizonte",
+    state: "MG",
+    carStatus: "PENDENTE",
+    registrationDate: "2021-02-15",
+    declaredArea: 1500,
+    status: "NÃO ELEGÍVEL",
+    consolidatedArea: 1200,
+    biomass: "Média",
+    analysisYear: 2023,
+    productivity: 3200,
+    harvestReference: "2022/2023",
+    productivePotential: 2500,
+    coordinates: [-43.9378, -19.9208],
+    images: [
+      {
+        id: "2",
+        sensor: "Landsat-8",
+        imageId: "LC08_L1TP_20230620",
+        date: "2023-06-20",
+        centralCoordinate: [-43.9378, -19.9208],
+        url: "https://example.com/image2.jpg"
+      }
+    ]
+  }
+];
 
 const Index = () => {
   const navigate = useNavigate();
