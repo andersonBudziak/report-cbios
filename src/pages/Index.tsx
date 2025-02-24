@@ -178,16 +178,25 @@ const Index = () => {
                   padding: 0;
                 }
                 .report-page {
-                  page-break-after: always;
-                  padding: 16px;
+                  page-break-after: always !important;
+                  page-break-inside: avoid !important;
+                  break-inside: avoid !important;
+                  padding: 20px;
+                  height: 100vh;
+                  box-sizing: border-box;
+                  display: flex;
+                  flex-direction: column;
                 }
                 .report-page:last-child {
-                  page-break-after: avoid;
+                  page-break-after: auto;
                 }
                 .container {
                   max-width: 100%;
                   margin: 0 auto;
                   padding: 0;
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
                 }
                 .header {
                   display: flex;
@@ -243,7 +252,7 @@ const Index = () => {
                   font-weight: 500;
                 }
                 .images-section {
-                  margin-top: 32px;
+                  margin-top: auto;
                 }
                 .images-section h2 {
                   color: #064C9F;
@@ -263,7 +272,7 @@ const Index = () => {
                 }
                 .map-container {
                   width: 100%;
-                  height: 240px;
+                  height: 180px;
                   margin-bottom: 12px;
                   border-radius: 4px;
                   overflow: hidden;
@@ -274,8 +283,12 @@ const Index = () => {
                   object-fit: cover;
                 }
                 .image-info {
-                  font-size: 12px;
-                  line-height: 1.5;
+                  font-size: 11px;
+                  line-height: 1.4;
+                }
+                @page {
+                  margin: 0;
+                  size: A4 portrait;
                 }
               }
             </style>
