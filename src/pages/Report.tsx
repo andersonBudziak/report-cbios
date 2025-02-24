@@ -152,8 +152,8 @@ const Report = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 print:gap-2">
-          <div className="space-y-4 print:space-y-2 col-span-1">
+        <div className="space-y-4 print:space-y-2">
+          <div className="grid grid-cols-2 gap-4 print:gap-2">
             <div className="print:text-[11px]">
               <h2 className="text-lg font-semibold text-[#064C9F] mb-2 print:text-sm print:mb-1">
                 Dados da Propriedade
@@ -183,7 +183,7 @@ const Report = () => {
             </div>
           </div>
 
-          <div className="col-span-2">
+          <div>
             <h2 className="text-lg font-semibold text-[#064C9F] mb-2 print:text-sm print:mb-1">
               Imagens e Sensores
             </h2>
@@ -195,7 +195,7 @@ const Report = () => {
                   </h3>
                   <div 
                     ref={el => mapRefs.current[index] = el} 
-                    className="w-full h-32 mb-2 rounded-lg overflow-hidden print:h-40"
+                    className="w-full h-48 mb-2 rounded-lg overflow-hidden print:h-52"
                   />
                   <div className="space-y-0.5 text-xs text-[#1F2937] print:text-[10px]">
                     <p><span className="font-medium">Sensores:</span> {image.sensor}</p>
