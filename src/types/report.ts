@@ -24,5 +24,5 @@ export interface SatelliteImage {
   imageId: string;
   date: string;
   centralCoordinate: [number, number];
-  url?: string;
+  url: string;
 }
