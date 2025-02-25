@@ -45,6 +45,7 @@ export const loadReportData = async (carFolder: string): Promise<Report> => {
           ];
           
           return {
+            id: `${reportData.car}-image-${imageNumber}`,
             ...reportData.images[index],
             url: fallbackImages[index]
           };
@@ -54,6 +55,7 @@ export const loadReportData = async (carFolder: string): Promise<Report> => {
 
     return {
       ...reportData,
+      id: reportData.car, // Usando o CAR como ID do relatório
       images
     };
   } catch (error) {
