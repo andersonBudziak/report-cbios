@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,10 +5,14 @@ import { ArrowLeft, Printer } from "lucide-react";
 import Map from "ol/Map";
 import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
+import ImageLayer from "ol/layer/Image";
 import { fromLonLat } from "ol/proj";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import OSM from "ol/source/OSM";
 import { useToast } from "@/hooks/use-toast";
+import { Report as ReportType } from "@/types/report";
+import { loadReportData } from "@/services/reportService";
+import { useQuery } from "@tanstack/react-query";
 
 const mockReports = {
   "1": {
@@ -90,7 +93,11 @@ const Report = () => {
   const mapRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { toast } = useToast();
 
-  const report = id ? mockReports[id] : null;
+  const { data: report, isLoading, error } = useQuery({
+    queryKey: ['report', id],
+    queryFn: () => loadReportData(id || ''),
+    enabled: !!id
+  });
 
   useEffect(() => {
     if (!report) return;
@@ -154,10 +161,21 @@ const Report = () => {
     }
   };
 
-  if (!report) {
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1>Relatório não encontrado</h1>
+        <h1>Carregando relatório...</h1>
+      </div>
+    );
+  }
+
+  if (error || !report) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1>Erro ao carregar relatório</h1>
+        <Button variant="ghost" onClick={() => navigate("/")}>
+          Voltar para a lista
+        </Button>
       </div>
     );
   }
@@ -259,4 +277,3 @@ const Report = () => {
 };
 
 export default Report;
-
