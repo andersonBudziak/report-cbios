@@ -30,14 +30,24 @@ export const loadReportData = async (carFolder: string): Promise<Report> => {
           return {
             id: `${reportData.car}-image-${imageNumber}`,
             sensor: reportData.images[index]?.sensor || "Não especificado",
-            imageId: `IMG_${imageNumber}`,
+            imageId: reportData.images[index]?.imageId || `IMG_${imageNumber}`,
             date: reportData.images[index]?.date || "Data não disponível",
             centralCoordinate: reportData.images[index]?.centralCoordinate || [0, 0],
             url: `/data/${carFolder}/imagem${imageNumber}.tif`
           };
         } catch (error) {
           console.error(`Erro ao carregar imagem ${imageNumber}:`, error);
-          return null;
+          // Se houver erro ao carregar o TIF, vamos usar as URLs das imagens fornecidas como fallback
+          const fallbackImages = [
+            "/lovable-uploads/2191ed4c-a1b6-46f1-9289-68a45cdb48bc.png",
+            "/lovable-uploads/a00a789b-96d2-4a38-af5b-b39585a8141c.png",
+            "/lovable-uploads/5fef2137-e98f-43fd-ae6d-55d1cf28fc3b.png"
+          ];
+          
+          return {
+            ...reportData.images[index],
+            url: fallbackImages[index]
+          };
         }
       })
     ).then(images => images.filter((img): img is SatelliteImage => img !== null));

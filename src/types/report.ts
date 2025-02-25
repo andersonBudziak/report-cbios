@@ -1,6 +1,5 @@
 
 export interface Report {
-  id: string;
   car: string;
   municipality: string;
   state: string;
@@ -19,10 +18,9 @@ export interface Report {
 }
 
 export interface SatelliteImage {
-  id: string;
   sensor: string;
   imageId: string;
   date: string;
   centralCoordinate: [number, number];
-  url: string;
+  url?: string;
 }
