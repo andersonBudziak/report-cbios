@@ -10,79 +10,8 @@ import { fromLonLat } from "ol/proj";
 import { useEffect, useRef } from "react";
 import OSM from "ol/source/OSM";
 import { useToast } from "@/hooks/use-toast";
-
-const mockReports = {
-  "1": {
-    car: "SP-1234567-123456789",
-    municipality: "São Paulo",
-    state: "SP",
-    carStatus: "ATIVO",
-    registrationDate: "01/01/2021",
-    declaredArea: 1000,
-    status: "ELEGÍVEL",
-    consolidatedArea: 800,
-    biomass: "Soja",
-    analysisYear: 2023,
-    productivity: 3500,
-    harvestReference: "2022/2023",
-    productivePotential: 2800,
-    images: [
-      {
-        sensor: "Sentinel-2",
-        imageId: "S2A_MSIL2A_20230615",
-        date: "15/06/2023",
-        centralCoordinate: [-46.6333, -23.5505],
-      },
-      {
-        sensor: "Sentinel-2",
-        imageId: "S2A_MSIL2A_20230715",
-        date: "15/07/2023",
-        centralCoordinate: [-46.6333, -23.5505],
-      },
-      {
-        sensor: "Sentinel-2",
-        imageId: "S2A_MSIL2A_20230815",
-        date: "15/08/2023",
-        centralCoordinate: [-46.6333, -23.5505],
-      }
-    ],
-  },
-  "2": {
-    car: "MG-7654321-987654321",
-    municipality: "Belo Horizonte",
-    state: "MG",
-    carStatus: "PENDENTE",
-    registrationDate: "15/02/2021",
-    declaredArea: 1500,
-    status: "NÃO ELEGÍVEL",
-    consolidatedArea: 1200,
-    biomass: "Soja",
-    analysisYear: 2023,
-    productivity: 3200,
-    harvestReference: "2022/2023",
-    productivePotential: 2500,
-    images: [
-      {
-        sensor: "Landsat-8",
-        imageId: "LC08_L1TP_20230620",
-        date: "20/06/2023",
-        centralCoordinate: [-43.9378, -19.9208],
-      },
-      {
-        sensor: "Landsat-8",
-        imageId: "LC08_L1TP_20230720",
-        date: "20/07/2023",
-        centralCoordinate: [-43.9378, -19.9208],
-      },
-      {
-        sensor: "Landsat-8",
-        imageId: "LC08_L1TP_20230820",
-        date: "20/08/2023",
-        centralCoordinate: [-43.9378, -19.9208],
-      }
-    ],
-  }
-};
+import { fetchReport } from "@/services/reportService";
+import { useQuery } from "@tanstack/react-query";
 
 const Report = () => {
   const { id } = useParams();
@@ -90,7 +19,11 @@ const Report = () => {
   const mapRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { toast } = useToast();
 
-  const report = id ? mockReports[id] : null;
+  const { data: report, isLoading, error } = useQuery({
+    queryKey: ['report', id],
+    queryFn: () => fetchReport(id || ''),
+    enabled: !!id
+  });
 
   useEffect(() => {
     if (!report) return;
@@ -154,10 +87,21 @@ const Report = () => {
     }
   };
 
-  if (!report) {
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1>Carregando relatório...</h1>
+      </div>
+    );
+  }
+
+  if (error || !report) {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1>Relatório não encontrado</h1>
+        <Button variant="ghost" onClick={() => navigate("/")}>
+          Voltar para a lista
+        </Button>
       </div>
     );
   }
@@ -235,7 +179,7 @@ const Report = () => {
             </h2>
             <div className="grid grid-cols-3 gap-2">
               {report.images.map((image, index) => (
-                <Card key={index} className="p-2 bg-[#F3F4F6] print:break-inside-avoid">
+                <Card key={image.id} className="p-2 bg-[#F3F4F6] print:break-inside-avoid">
                   <h3 className="font-medium mb-1 text-[#064C9F] text-sm print:text-[11px]">
                     Imagem {index + 1}
                   </h3>
@@ -259,4 +203,3 @@ const Report = () => {
 };
 
 export default Report;
-
