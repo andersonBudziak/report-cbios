@@ -57,7 +57,7 @@ export const ReportList = ({ reports, onPrint }: ReportListProps) => {
         {reports.map((report) => (
           <Card
             key={report.id}
-            className="report-card cursor-pointer bg-[#F3F4F6] hover:bg-white"
+            className="report-card cursor-pointer bg-[#F3F4F6] hover:bg-white p-4"
             onClick={() => navigate(`/report/${report.id}`)}
           >
             <div className="flex items-center space-x-4">
@@ -66,23 +66,29 @@ export const ReportList = ({ reports, onPrint }: ReportListProps) => {
                 onCheckedChange={() => handleSelect(report.id)}
                 onClick={(e) => e.stopPropagation()}
               />
-              <div className="flex-1">
-                <h3 className="font-semibold text-[#064C9F]">CAR: {report.car}</h3>
-                <p className="text-sm text-[#1F2937]">
-                  {report.municipality} - {report.state}
-                </p>
-                <p className="text-sm text-[#1F2937]">
-                  Área: {report.declaredArea} ha
-                </p>
-              </div>
-              <div
-                className={`px-2 py-1 rounded-full text-xs ${
-                  report.status === "ELEGÍVEL"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-[#DC2626]"
-                }`}
-              >
-                {report.status}
+              <div className="flex-1 space-y-2">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-semibold text-[#064C9F]">CAR: {report.car}</h3>
+                  <div
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      report.status === "ELEGÍVEL"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-[#DC2626]"
+                    }`}
+                  >
+                    {report.status}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-sm text-[#1F2937]">
+                  <div>
+                    <p>Município: {report.municipality} - {report.state}</p>
+                    <p>Área: {report.declaredArea} ha</p>
+                  </div>
+                  <div>
+                    <p>Cultura: {report.biomass}</p>
+                    <p>Ano de Análise: {report.analysisYear}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </Card>
@@ -91,3 +97,4 @@ export const ReportList = ({ reports, onPrint }: ReportListProps) => {
     </div>
   );
 };
+
