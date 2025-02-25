@@ -1,96 +1,16 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Printer } from "lucide-react";
-import Map from "ol/Map";
-import View from "ol/View";
-import TileLayer from "ol/layer/Tile";
-import ImageLayer from "ol/layer/Image";
-import { fromLonLat } from "ol/proj";
-import { useEffect, useRef, useState } from "react";
-import OSM from "ol/source/OSM";
+import { ArrowLeft, Printer, Image } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Report as ReportType } from "@/types/report";
 import { loadReportData } from "@/services/reportService";
 import { useQuery } from "@tanstack/react-query";
-
-const mockReports = {
-  "1": {
-    car: "SP-1234567-123456789",
-    municipality: "São Paulo",
-    state: "SP",
-    carStatus: "ATIVO",
-    registrationDate: "01/01/2021",
-    declaredArea: 1000,
-    status: "ELEGÍVEL",
-    consolidatedArea: 800,
-    biomass: "Soja",
-    analysisYear: 2023,
-    productivity: 3500,
-    harvestReference: "2022/2023",
-    productivePotential: 2800,
-    images: [
-      {
-        sensor: "Sentinel-2",
-        imageId: "S2A_MSIL2A_20230615",
-        date: "15/06/2023",
-        centralCoordinate: [-46.6333, -23.5505],
-      },
-      {
-        sensor: "Sentinel-2",
-        imageId: "S2A_MSIL2A_20230715",
-        date: "15/07/2023",
-        centralCoordinate: [-46.6333, -23.5505],
-      },
-      {
-        sensor: "Sentinel-2",
-        imageId: "S2A_MSIL2A_20230815",
-        date: "15/08/2023",
-        centralCoordinate: [-46.6333, -23.5505],
-      }
-    ],
-  },
-  "2": {
-    car: "MG-7654321-987654321",
-    municipality: "Belo Horizonte",
-    state: "MG",
-    carStatus: "PENDENTE",
-    registrationDate: "15/02/2021",
-    declaredArea: 1500,
-    status: "NÃO ELEGÍVEL",
-    consolidatedArea: 1200,
-    biomass: "Soja",
-    analysisYear: 2023,
-    productivity: 3200,
-    harvestReference: "2022/2023",
-    productivePotential: 2500,
-    images: [
-      {
-        sensor: "Landsat-8",
-        imageId: "LC08_L1TP_20230620",
-        date: "20/06/2023",
-        centralCoordinate: [-43.9378, -19.9208],
-      },
-      {
-        sensor: "Landsat-8",
-        imageId: "LC08_L1TP_20230720",
-        date: "20/07/2023",
-        centralCoordinate: [-43.9378, -19.9208],
-      },
-      {
-        sensor: "Landsat-8",
-        imageId: "LC08_L1TP_20230820",
-        date: "20/08/2023",
-        centralCoordinate: [-43.9378, -19.9208],
-      }
-    ],
-  }
-};
 
 const Report = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const mapRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { toast } = useToast();
 
   const { data: report, isLoading, error } = useQuery({
@@ -98,31 +18,6 @@ const Report = () => {
     queryFn: () => loadReportData(id || ''),
     enabled: !!id
   });
-
-  useEffect(() => {
-    if (!report) return;
-
-    report.images.forEach((image, index) => {
-      if (!mapRefs.current[index]) return;
-
-      const map = new Map({
-        target: mapRefs.current[index]!,
-        layers: [
-          new TileLayer({
-            source: new OSM(),
-          }),
-        ],
-        view: new View({
-          center: fromLonLat(image.centralCoordinate),
-          zoom: 13,
-        }),
-      });
-
-      return () => {
-        map.setTarget(undefined);
-      };
-    });
-  }, [report?.images]);
 
   const handlePrint = () => {
     try {
@@ -257,10 +152,19 @@ const Report = () => {
                   <h3 className="font-medium mb-1 text-[#064C9F] text-sm print:text-[11px]">
                     Imagem {index + 1}
                   </h3>
-                  <div 
-                    ref={el => mapRefs.current[index] = el} 
-                    className="w-full h-48 mb-2 rounded-lg overflow-hidden print:h-52"
-                  />
+                  <div className="relative w-full h-48 mb-2 rounded-lg overflow-hidden print:h-52 bg-gray-100">
+                    {image.url ? (
+                      <img
+                        src={image.url}
+                        alt={`Imagem ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center w-full h-full">
+                        <Image className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
                   <div className="space-y-0.5 text-xs text-[#1F2937] print:text-[10px]">
                     <p><span className="font-medium">Sensores:</span> {image.sensor}</p>
                     <p><span className="font-medium">Data:</span> {image.date}</p>
