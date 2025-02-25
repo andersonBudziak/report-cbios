@@ -2,11 +2,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Printer, Image } from "lucide-react";
+import { ArrowLeft, Printer } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { loadReportData } from "@/services/reportService";
 import { useQuery } from "@tanstack/react-query";
+import MapComponent from "@/components/Map";
 
 const Report = () => {
   const { id } = useParams();
@@ -147,28 +148,21 @@ const Report = () => {
               Imagens e Sensores
             </h2>
             <div className="grid grid-cols-3 gap-2">
-              {report.images.map((image, index) => (
+              {report.images.map((_, index) => (
                 <Card key={index} className="p-2 bg-[#F3F4F6] print:break-inside-avoid">
                   <h3 className="font-medium mb-1 text-[#064C9F] text-sm print:text-[11px]">
                     Imagem {index + 1}
                   </h3>
-                  <div className="relative w-full h-48 mb-2 rounded-lg overflow-hidden print:h-52 bg-gray-100">
-                    {image.url ? (
-                      <img
-                        src={image.url}
-                        alt={`Imagem ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center w-full h-full">
-                        <Image className="w-8 h-8 text-gray-400" />
-                      </div>
-                    )}
+                  <div className="relative w-full h-48 mb-2 rounded-lg overflow-hidden print:h-52">
+                    <MapComponent
+                      reports={[report]}
+                      onSelectReport={() => {}}
+                    />
                   </div>
                   <div className="space-y-0.5 text-xs text-[#1F2937] print:text-[10px]">
-                    <p><span className="font-medium">Sensores:</span> {image.sensor}</p>
-                    <p><span className="font-medium">Data:</span> {image.date}</p>
-                    <p className="truncate"><span className="font-medium">ID:</span> {image.imageId}</p>
+                    <p><span className="font-medium">Sensores:</span> {report.images[index].sensor}</p>
+                    <p><span className="font-medium">Data:</span> {report.images[index].date}</p>
+                    <p className="truncate"><span className="font-medium">ID:</span> {report.images[index].imageId}</p>
                   </div>
                 </Card>
               ))}
