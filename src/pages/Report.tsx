@@ -1,54 +1,40 @@
 
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { ArrowLeft, Printer } from "lucide-react";
-import Map from "ol/Map";
-import View from "ol/View";
-import TileLayer from "ol/layer/Tile";
-import { fromLonLat } from "ol/proj";
-import { useEffect, useRef } from "react";
-import OSM from "ol/source/OSM";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { fetchReport } from "@/services/reportService";
-import { useQuery } from "@tanstack/react-query";
 
 const Report = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const mapRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [reportHtml, setReportHtml] = useState("");
   const { toast } = useToast();
 
-  const { data: report, isLoading, error } = useQuery({
-    queryKey: ['report', id],
-    queryFn: () => fetchReport(id || ''),
-    enabled: !!id
-  });
-
   useEffect(() => {
-    if (!report) return;
-
-    report.images.forEach((image, index) => {
-      if (!mapRefs.current[index]) return;
-
-      const map = new Map({
-        target: mapRefs.current[index]!,
-        layers: [
-          new TileLayer({
-            source: new OSM(),
-          }),
-        ],
-        view: new View({
-          center: fromLonLat(image.centralCoordinate),
-          zoom: 13,
-        }),
+    fetch(`/relatorios_html/${id}.html`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Relatório não encontrado');
+        }
+        return response.text();
+      })
+      .then((html) => {
+        const cleanedHtml = html.replace(
+          /<html[^>]*>|<head[^>]*>|<\/head>|<body[^>]*>|<\/body>|<\/html>/gi,
+          ""
+        );
+        setReportHtml(cleanedHtml);
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar o relatório HTML:", error);
+        toast({
+          title: "Erro ao carregar relatório",
+          description: "Não foi possível carregar o relatório solicitado.",
+          variant: "destructive",
+        });
       });
-
-      return () => {
-        map.setTarget(undefined);
-      };
-    });
-  }, [report?.images]);
+  }, [id, toast]);
 
   const handlePrint = () => {
     try {
@@ -62,8 +48,6 @@ const Report = () => {
       window.print();
 
       document.body.classList.remove('printing');
-
-      console.log("Printing report:", id);
     } catch (error) {
       toast({
         title: "Erro na impressão",
@@ -74,130 +58,69 @@ const Report = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "ELEGÍVEL":
-        return "bg-green-100 text-green-800";
-      case "NÃO ELEGÍVEL":
-        return "bg-red-100 text-red-800";
-      case "Pendente":
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  if (isLoading) {
+  if (!reportHtml) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1>Carregando relatório...</h1>
-      </div>
-    );
-  }
-
-  if (error || !report) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1>Relatório não encontrado</h1>
-        <Button variant="ghost" onClick={() => navigate("/")}>
-          Voltar para a lista
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8 print:p-0 print:m-0">
-      <div className="flex justify-between items-center mb-8 print:mb-2">
-        <div className="flex items-center space-x-4">
+        <div className="flex justify-between items-center mb-8">
           <Button
             variant="ghost"
-            className="flex items-center space-x-2 text-[#1F2937] no-print"
+            className="flex items-center space-x-2 text-[#1F2937]"
             onClick={() => navigate("/")}
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Voltar</span>
           </Button>
+          <img
+            src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png"
+            alt="Merx Logo"
+            className="h-8 w-auto"
+          />
         </div>
-        <img 
-          src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png"
-          alt="Merx Logo" 
-          className="h-8 w-auto print:h-6"
-        />
-        <Button
-          onClick={handlePrint}
-          variant="outline"
-          className="flex items-center space-x-2 no-print"
-        >
-          <Printer className="h-4 w-4" />
-          <span>Imprimir</span>
-        </Button>
+        <div className="text-center">Carregando relatório...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Cabeçalho fixo */}
+      <div className="sticky top-0 z-50 bg-white shadow-md">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <Button
+              variant="ghost"
+              className="flex items-center space-x-2 text-[#1F2937] no-print"
+              onClick={() => navigate("/")}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Voltar</span>
+            </Button>
+            <img
+              src="/lovable-uploads/aecb3a36-0513-4295-bd99-f0db9a41a78b.png"
+              alt="Merx Logo"
+              className="h-8 w-auto print:h-6"
+            />
+            <Button
+              onClick={handlePrint}
+              variant="outline"
+              className="flex items-center space-x-2 no-print"
+            >
+              <Printer className="h-4 w-4" />
+              <span>Imprimir</span>
+            </Button>
+          </div>
+        </div>
       </div>
 
-      <Card className="p-6 space-y-4 print:shadow-none print:border-none print:p-2">
-        <div className="flex justify-between items-center print:mb-2">
-          <h1 className="text-2xl font-bold text-[#064C9F] print:text-xl">Relatório CBIOs</h1>
-          <div className={`px-3 py-1 rounded-full text-sm ${getStatusColor(report.status)} print:text-xs`}>
-            {report.status}
-          </div>
+      {/* Conteúdo do relatório */}
+      <div className="container mx-auto px-4 py-8 print:p-0 print:m-0">
+        <div className="bg-white shadow-lg rounded-lg p-6 print:shadow-none print:p-0">
+          <div
+            dangerouslySetInnerHTML={{ __html: reportHtml }}
+            className="report-content"
+          />
         </div>
-
-        <div className="space-y-4 print:space-y-2">
-          <div className="grid grid-cols-2 gap-4 print:gap-2">
-            <div className="print:text-[11px]">
-              <h2 className="text-lg font-semibold text-[#064C9F] mb-2 print:text-sm print:mb-1">
-                Dados da Propriedade
-              </h2>
-              <div className="space-y-0.5 text-sm text-[#1F2937] print:text-[11px]">
-                <p><span className="font-medium">CAR:</span> {report.car}</p>
-                <p><span className="font-medium">Município:</span> {report.municipality}</p>
-                <p><span className="font-medium">UF:</span> {report.state}</p>
-                <p><span className="font-medium">Status do CAR:</span> {report.carStatus}</p>
-                <p><span className="font-medium">Data de Registro:</span> {report.registrationDate}</p>
-                <p><span className="font-medium">Área Declarada:</span> {report.declaredArea} ha</p>
-              </div>
-            </div>
-
-            <div className="print:text-[11px]">
-              <h2 className="text-lg font-semibold text-[#064C9F] mb-2 print:text-sm print:mb-1">
-                Dados da Análise
-              </h2>
-              <div className="space-y-0.5 text-sm text-[#1F2937] print:text-[11px]">
-                <p><span className="font-medium">Área Consolidada:</span> {report.consolidatedArea} ha</p>
-                <p><span className="font-medium">Biomassa:</span> {report.biomass}</p>
-                <p><span className="font-medium">Ano de Análise:</span> {report.analysisYear}</p>
-                <p><span className="font-medium">Produtividade:</span> {report.productivity} kg/ha</p>
-                <p><span className="font-medium">Safra de Referência:</span> {report.harvestReference}</p>
-                <p><span className="font-medium">Potencial Produtivo:</span> {report.productivePotential} ton</p>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-lg font-semibold text-[#064C9F] mb-2 print:text-sm print:mb-1">
-              Imagens e Sensores
-            </h2>
-            <div className="grid grid-cols-3 gap-2">
-              {report.images.map((image, index) => (
-                <Card key={image.id} className="p-2 bg-[#F3F4F6] print:break-inside-avoid">
-                  <h3 className="font-medium mb-1 text-[#064C9F] text-sm print:text-[11px]">
-                    Imagem {index + 1}
-                  </h3>
-                  <div 
-                    ref={el => mapRefs.current[index] = el} 
-                    className="w-full h-48 mb-2 rounded-lg overflow-hidden print:h-52"
-                  />
-                  <div className="space-y-0.5 text-xs text-[#1F2937] print:text-[10px]">
-                    <p><span className="font-medium">Sensores:</span> {image.sensor}</p>
-                    <p><span className="font-medium">Data:</span> {image.date}</p>
-                    <p className="truncate"><span className="font-medium">ID:</span> {image.imageId}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </Card>
+      </div>
     </div>
   );
 };
