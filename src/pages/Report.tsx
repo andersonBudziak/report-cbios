@@ -113,8 +113,8 @@ const Report = () => {
       </div>
 
       {/* Conteúdo do relatório */}
-      <div className="container mx-auto px-4 py-8 print:p-0 print:m-0">
-        <div className="bg-white shadow-lg rounded-lg p-6 print:shadow-none print:p-0">
+      <div className="container mx-auto px-4 pt-20 pb-8 print:p-0 print:m-0"> {/* Aumentei o padding-top */}
+        <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-4xl print:shadow-none print:p-0"> {/* Adicionei max-w-4xl e mx-auto */}
           <div
             dangerouslySetInnerHTML={{ __html: reportHtml }}
             className="report-content"
