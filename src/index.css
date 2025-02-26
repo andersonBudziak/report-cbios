@@ -84,8 +84,11 @@
 
   body {
     padding: 20px;
-    font-size: 12px;
-    line-height: 1.4;
+    font-size: 10px; /* Reduzindo o tamanho da fonte para ajudar a caber em uma página */
+    line-height: 1.3;
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .container {
@@ -93,6 +96,9 @@
     max-width: none !important;
     padding: 0 !important;
     margin: 0 !important;
+    height: 100vh !important; /* Força altura máxima de uma página */
+    page-break-after: avoid;
+    page-break-before: avoid;
   }
 
   /* Garante que os mapas sejam impressos corretamente */
@@ -113,19 +119,15 @@
 
   /* Ajustes específicos para impressão */
   h1, h2, h3 {
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 0.3rem !important;
   }
 
   p {
-    margin-bottom: 0.25rem !important;
+    margin-bottom: 0.2rem !important;
   }
 
   .grid {
-    gap: 1rem !important;
-  }
-
-  .space-y-6 > * + * {
-    margin-top: 1rem !important;
+    gap: 0.5rem !important;
   }
 
   /* Evita quebra de página dentro de cards */
@@ -152,6 +154,15 @@
   .report-content {
     margin: 0 !important;
     padding: 0 !important;
+    max-height: 100vh !important; /* Força altura máxima de uma página */
+    overflow: hidden !important; /* Evita scroll */
+    page-break-after: avoid;
+    page-break-before: avoid;
+  }
+
+  /* Força impressão em uma única página */
+  @page {
+    size: auto;
+    margin: 0mm;
   }
 }
-
